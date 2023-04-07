@@ -22,8 +22,9 @@ import Drawer from '../component/common/Drawer';
 import Copyright from '../component/common/Copyright';
 import { mainListItems, secondaryListItems } from '../component/common/MenuList';
 import Common from '../component/common/Common';
-import { getCustomerList } from '../service/CMSService';
-import { CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { getCustomerDetail, getCustomerList } from '../service/CMSService';
+import { CircularProgress, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow } from '@mui/material';
+import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
 
 
 const mdTheme = createTheme();
@@ -32,15 +33,72 @@ const mdTheme = createTheme();
 export default function CustomerHome() {
     const renderAfterCalled = React.useRef(false);
     const [dataList, setDataList] = React.useState(null);
+    const [page, setPage] = React.useState(0);
+    const [totalRecord, setTotalRecord] = React.useState(0);
+    const [totalPage, setTotalPage] = React.useState(0);
+    const [size, setSize] = React.useState(10);
     React.useEffect(() => {
         if (!renderAfterCalled.current) {
-            getCustomerList()
+            getCustomerList(page , size)
                 .then(res => res.json())
-                .then(res => setDataList(res.dataList));
+                .then(res => {
+                    setDataList(res.dataList);
+                    setPage(res.page);
+                    setTotalPage(res.totalPage);
+                    setSize(res.size);
+                    setTotalRecord(res.totalRecord);
+                });
         }
 
         renderAfterCalled.current = true;
     })
+
+    
+    const handleChangePage = React.useCallback(
+        (event, newPage) => {
+            setSize(size);
+            setPage(newPage);
+      
+            getCustomerList(newPage , size)
+            .then(res => res.json())
+            .then(res => {
+                setDataList(res.dataList);
+                setPage(res.page);
+                setTotalPage(res.totalPage);
+                setSize(res.size);
+                setTotalRecord(res.totalRecord);
+            });
+          },
+          [],
+    );
+    
+    const handleChangeRowsPerPage = React.useCallback(
+        (event) => {
+            const size = parseInt(event.target.value, 10);
+            setSize(size);
+            setPage(page);
+      
+            getCustomerList(page , size)
+            .then(res => res.json())
+            .then(res => {
+                setDataList(res.dataList);
+                setPage(res.page);
+                setTotalPage(res.totalPage);
+                setSize(res.size);
+                setTotalRecord(res.totalRecord);
+            });
+      
+            // There is no layout jump to handle on the first page.
+           
+          },
+          [],
+    );
+
+    const showDetail = (customerCode) => {
+        getCustomerDetail(customerCode)
+            .then(res => res.json())
+            .then(data => console.log(data))
+    }
 
     return (
 
@@ -62,7 +120,7 @@ export default function CustomerHome() {
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                     <TableContainer component={Paper}>
-                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader >
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Customer name</TableCell>
@@ -76,6 +134,9 @@ export default function CustomerHome() {
                                 <TableBody>
                                     {dataList.map((data) => (
                                         <TableRow
+                                            // onClick={showDetail(data.customerCode)} 
+                                            onClick={() => showDetail(data.customerCode)} 
+                                            hover role="checkbox" tabIndex={-1}
                                             key={data.customerCode}
                                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                         >
@@ -90,6 +151,29 @@ export default function CustomerHome() {
                                     ))}
                                 </TableBody>
                             )}
+                            <TableFooter>
+                                <TableRow>
+                                  <TablePagination
+                                    rowsPerPageOptions={[5, 10, 25, { label: 'All', value: totalRecord }]}
+                                    colSpan={3}
+                                    count={totalRecord}
+                                    rowsPerPage={size}
+                                    page={page}
+                                    SelectProps={{
+                                      inputProps: {
+                                        'aria-label': 'Page size',
+                                      },
+                                      native: true,
+
+                                    }}
+                                    onPageChange={handleChangePage}
+                                    onRowsPerPageChange={handleChangeRowsPerPage}
+                                    ActionsComponent={TablePaginationActions}
+                                    showFirstButton={true}
+                                    showLastButton={true}
+                                  />
+                                </TableRow>
+                              </TableFooter>
                         </Table>
                     </TableContainer>
                     </Container>
