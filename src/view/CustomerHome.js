@@ -25,24 +25,34 @@ import Common from '../component/common/Common';
 import { getCustomerDetail, getCustomerList } from '../service/CMSService';
 import { CircularProgress, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow } from '@mui/material';
 import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
-
+import CustomerDetailDialog from '../component/customer/CustomerDetailDiaLog';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 const mdTheme = createTheme();
 
 
 export default function CustomerHome() {
     const renderAfterCalled = React.useRef(false);
-    const [dataList, setDataList] = React.useState(null);
+    const [customerList, setCustomerList] = React.useState([]);
     const [page, setPage] = React.useState(0);
     const [totalRecord, setTotalRecord] = React.useState(0);
     const [totalPage, setTotalPage] = React.useState(0);
     const [size, setSize] = React.useState(10);
+    const [open, setOpen] = React.useState(false);
+    const [customer, setCustomer] = React.useState(null); 
+    
     React.useEffect(() => {
         if (!renderAfterCalled.current) {
             getCustomerList(page , size)
                 .then(res => res.json())
                 .then(res => {
-                    setDataList(res.dataList);
+                    setCustomerList(res.dataList);
                     setPage(res.page);
                     setTotalPage(res.totalPage);
                     setSize(res.size);
@@ -62,7 +72,7 @@ export default function CustomerHome() {
             getCustomerList(newPage , size)
             .then(res => res.json())
             .then(res => {
-                setDataList(res.dataList);
+                setCustomerList(res.dataList);
                 setPage(res.page);
                 setTotalPage(res.totalPage);
                 setSize(res.size);
@@ -81,7 +91,7 @@ export default function CustomerHome() {
             getCustomerList(page , size)
             .then(res => res.json())
             .then(res => {
-                setDataList(res.dataList);
+                setCustomerList(res.dataList);
                 setPage(res.page);
                 setTotalPage(res.totalPage);
                 setSize(res.size);
@@ -94,11 +104,21 @@ export default function CustomerHome() {
           [],
     );
 
-    const showDetail = (customerCode) => {
+    const showDetail = React.useCallback(
+        (e, customerCode) => {
+        e.preventDefault();
+        console.log(customerCode);
+
+        setOpen(true);
         getCustomerDetail(customerCode)
-            .then(res => res.json())
-            .then(data => console.log(data))
-    }
+                .then(res => res.json())
+                .then(res => setCustomer(res.data));
+    })
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+    
 
     return (
 
@@ -130,12 +150,12 @@ export default function CustomerHome() {
                                     <TableCell align="right">Voucher number</TableCell>
                                 </TableRow>
                             </TableHead>
-                            {dataList == null ? <CircularProgress /> : (
+                            {customerList == null ? <CircularProgress /> : (
                                 <TableBody>
-                                    {dataList.map((data) => (
+                                    {customerList.map((data) => (
                                         <TableRow
                                             // onClick={showDetail(data.customerCode)} 
-                                            onClick={() => showDetail(data.customerCode)} 
+                                            onClick={(event) => showDetail(event, data.customerCode)} 
                                             hover role="checkbox" tabIndex={-1}
                                             key={data.customerCode}
                                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
@@ -179,6 +199,29 @@ export default function CustomerHome() {
                     </Container>
                 </Box>
             </Box>
+            <CustomerDetailDialog open={open} handleClose={handleClose} customer={customer}/>
+            {/* <Dialog open={open} onClose={handleClose}>
+            <DialogTitle>Subscribe</DialogTitle>
+            <DialogContent>
+            <DialogContentText>
+                To subscribe to this website, please enter your email address here. We
+                will send updates occasionally.
+            </DialogContentText>
+            <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                label="Email Address"
+                type="email"
+                fullWidth
+                variant="standard"
+            />
+            </DialogContent>
+            <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button onClick={handleClose}>Subscribe</Button>
+            </DialogActions>
+        </Dialog> */}
         </ThemeProvider>
 
     );
