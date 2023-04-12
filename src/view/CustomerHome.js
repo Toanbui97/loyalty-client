@@ -33,19 +33,28 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import AlertPopup from '../component/common/Arlert';
+import TableButton from '../component/common/TableButton';
 
 const mdTheme = createTheme();
 
 
 export default function CustomerHome() {
     const renderAfterCalled = React.useRef(false);
+    const [alertData, setAlertData] = React.useState({});
+    const [alertOpen, setAlertOpen] = React.useState(false);
     const [customerList, setCustomerList] = React.useState([]);
+    const [openAdd, setOpenAdd] = React.useState(false);
     const [page, setPage] = React.useState(0);
     const [totalRecord, setTotalRecord] = React.useState(0);
     const [totalPage, setTotalPage] = React.useState(0);
     const [size, setSize] = React.useState(10);
     const [open, setOpen] = React.useState(false);
     const [customer, setCustomer] = React.useState(null); 
+
+    const handleCloseAlert = () => {
+        window.location.reload(true);
+    }
     
     React.useEffect(() => {
         if (!renderAfterCalled.current) {
@@ -119,12 +128,24 @@ export default function CustomerHome() {
         setOpen(false);
     };
     
+    const handleAddButton = React.useCallback(
+        e => {
+            e.preventDefault();
+            setOpenAdd(true);
+        }
+    )
 
+    const hanldeCloseAdd = React.useCallback(
+        () => {
+            setOpenAdd(false);
+        }
+    )
     return (
 
         <ThemeProvider theme={mdTheme}>
+            <AlertPopup data={alertData} open={alertOpen} setOpen={setAlertOpen} onClose={handleCloseAlert} />
             <Box sx={{ display: 'flex' }}>
-                <Common />
+                <Common text={'Customer home'}/>
                 <Box
                     component="main"
                     sx={{
@@ -140,6 +161,8 @@ export default function CustomerHome() {
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                     <TableContainer component={Paper}>
+                        <TableButton add={{onClick: handleAddButton}} remove search />
+
                         <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader >
                             <TableHead>
                                 <TableRow>
@@ -199,7 +222,7 @@ export default function CustomerHome() {
                     </Container>
                 </Box>
             </Box>
-            <CustomerDetailDialog open={open} handleClose={handleClose} customer={customer}/>
+            <CustomerDetailDialog open={open} handleClose={handleClose} customer={customer} setAlertData={setAlertData} setAlertOpen={setAlertOpen}/>
             {/* <Dialog open={open} onClose={handleClose}>
             <DialogTitle>Subscribe</DialogTitle>
             <DialogContent>

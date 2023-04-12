@@ -32,7 +32,7 @@ export default function Home() {
     return (
         <ThemeProvider theme={mdTheme}>
             <Box sx={{ display: 'flex' }}>
-                <Common />
+                <Common text="Dashboard" />
                 <Box
                     component="main"
                     sx={{
