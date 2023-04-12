@@ -9,7 +9,7 @@ import { updateRank } from '../../service/CMSService';
 import useAlert from '../../context/UseAler';
 import { createVoucherInfo, updateVoucherInfo } from '../../service/VoucherService';
 
-export default function VoucherAddDialog(props) {
+export default function RankAddDialog(props) {
 
     const {setAlert} = useAlert();
     const data = {};
@@ -33,40 +33,29 @@ export default function VoucherAddDialog(props) {
         <div>
                 <Dialog open={props.open} onClose={handleCancel} fullWidth={true} maxWidth={'lg'}>
                 <div>
-                    <DialogTitle>Create voucher</DialogTitle>
+                    <DialogTitle>Add new</DialogTitle>
                     <DialogContent>
                         <Grid container spacing={4} >
                             
                             <Grid item xs={6}>
                                 <FormControl  variant="standard" fullWidth={true}>
-                                    <InputLabel htmlFor="voucherName">Voucher name</InputLabel>
-                                    <Input id="voucherName" onChange={e => data.voucherName = e.target.value} />
+                                    <InputLabel htmlFor="rankName">Rank name</InputLabel>
+                                    <Input id="rankName" onChange={e => data.rankName = e.target.value} />
                                 </FormControl>
                             </Grid>
                             <Grid item xs={6}>
                                 <FormControl  variant="standard" fullWidth={true}>
-                                    <InputLabel htmlFor="description">Description</InputLabel>
-                                    <Input id="description"  onChange={e => data.description = e.target.value} />
+                                    <InputLabel htmlFor="requirePoint">Requiere point</InputLabel>
+                                    <Input id="requirePoint"  onChange={e => data.requirePoint = e.target.value} />
                                 </FormControl>
                             </Grid>
                             <Grid item xs={6}>
                                 <FormControl variant="standard" fullWidth={true}>
-                                    <InputLabel htmlFor="rpototalVoucherint">Total voucher</InputLabel>
-                                    <Input id="totalVoucher" onChange={e => data.totalVoucher = e.target.value} />
+                                    <InputLabel htmlFor="keepPoint">Total voucher</InputLabel>
+                                    <Input id="keepPoint" onChange={e => data.keepPoint = e.target.value} />
                                 </FormControl>
                             </Grid>
-                            <Grid item xs={6}>
-                                <FormControl variant="standard" fullWidth={true}>
-                                    <InputLabel htmlFor="discountPercent">Discount percent</InputLabel>
-                                    <Input id="discountPercent"  onChange={e => data.discountPercent = e.target.value} />
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <FormControl variant="standard" fullWidth={true}>
-                                    <InputLabel htmlFor="price">Price</InputLabel>
-                                    <Input id="price" onChange={e => data.price = e.target.value} />
-                                </FormControl>
-                            </Grid>
+                            
                             <Grid item xs={12}><Button
                                 fullWidth
                                 variant="contained"

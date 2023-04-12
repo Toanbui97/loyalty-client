@@ -177,7 +177,7 @@ export default function VoucherHome() {
             
                     <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
                         <TableContainer component={Paper}>
-                            <TableButton add={{onClick: handleAddButton}} remove search />
+                            <SearchBar  />
                             <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader >
                                 <TableHead>
                                     <TableRow>
@@ -242,5 +242,61 @@ export default function VoucherHome() {
             <VoucherAddDialog open={openAdd} handleClose={hanldeCloseAdd} setAlertData={setAlertData} setAlertOpen={setAlertOpen} />
         </ThemeProvider>
     );
+
+    function SearchBar() {
+        return (
+            <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+                <Grid container spacing={2}>
+                    <TableButton add={{ onClick: handleAddButton }} remove />
+                    <Grid item xs={12} justifyContent="flex-end">
+                        <Grid container>
+                            <Grid item xs={10}>
+                                <Stack direction="row" spacing={2}>
+                                    <TextField
+                                        label="Voucher name"
+                                        type="text"
+                                        variant="standard"
+                                        size="small"
+                                        inputProps={{
+                                            style: {
+                                                height: "15",
+                                            },
+                                        }}
+                                    />
+                                    <TextField
+                                        label="Discount percent"
+                                        type="text"
+                                        variant="standard"
+                                        size="small"
+                                        inputProps={{
+                                            style: {
+                                                height: "15",
+                                            },
+                                        }}
+                                    />
+                                    <TextField
+                                        label="Price"
+                                        type="text"
+                                        variant="standard"
+                                        size="small"
+                                        inputProps={{
+                                            style: {
+                                                height: "15",
+                                            },
+                                        }}
+                                    />
+                                    <IconButton color="primary" aria-label="upload picture" component="label" size="large">
+                                        <SearchIcon />
+                                    </IconButton>
+
+                                </Stack>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+
+                </Grid>
+            </Container>
+        )
+    }
 }
 

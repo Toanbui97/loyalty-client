@@ -11,51 +11,28 @@ import SearchIcon from "@mui/icons-material/Search";
 import { Container } from '@mui/system';
 
 
-export default function TableButton (props) {
+export default function TableButton(props) {
 
     const add = props.add;
     const remove = props.remove;
     const search = props.search;
 
     return (
-        <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-            <Grid container spacing={4}>
-                <Grid item xs={8}>
-                    <Stack direction="row" spacing={2}>
-                        {props.add ? (<Button variant="contained" color="success" size="small" startIcon={<AddIcon />} onClick={props.add.onClick}>
-                            Add
-                        </Button>) : ""}
+
+        
+            <Grid item xs={12}>
+                <Stack direction="row" spacing={2}>
+                    {props.add ? (<Button variant="contained" color="success" size="small" startIcon={<AddIcon />} onClick={props.add.onClick}>
+                        Add
+                    </Button>) : ""}
 
 
-                       {props.remove ? ( <Button variant="contained" color="error" size="small" endIcon={<DeleteIcon />}>
-                            Delete selected
-                        </Button>) : ""}
+                    {props.remove ? (<Button variant="contained" color="error" size="small" endIcon={<DeleteIcon />}>
+                        Delete selected
+                    </Button>) : ""}
+                    {/* <FilterButton /> */}
 
-
-                    </Stack>
-                </Grid>
-                <Grid item xs={4} justifyContent="flex-end">
-                    <Stack direction="row" spacing={2}>
-                        {props.search ? ( <>
-                        <TextField
-                            size="small"
-                            id="search"
-                            type="search"
-                            label="Search"
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position="end">
-                                        <SearchIcon fontSize="small" />
-                                    </InputAdornment>
-                                ),
-                            }}
-                        /> 
-                        <Button variant="contained" color="error" size="small" endIcon={<DeleteIcon />}>
-                            Search
-                        </Button> </>) : ""}
-                    </Stack>
-                </Grid>
+                </Stack>
             </Grid>
-        </Container>
     )
 }

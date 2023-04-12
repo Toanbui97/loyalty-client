@@ -5,12 +5,16 @@ import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Common from '../component/common/Common';
-import { CircularProgress, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow } from '@mui/material';
+import { CircularProgress, IconButton, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, TextField } from '@mui/material';
 import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
 import { getRankDetail, getRankList } from '../service/CMSService';
 import RankDetailDiaLog from '../component/rank/RankDetailDialog';
 import TransitionAlerts from '../component/common/Arlert';
 import TableButton from '../component/common/TableButton';
+import RankAddDialog from '../component/rank/RankAddDialog';
+import { Stack } from '@mui/system';
+import SearchIcon from "@mui/icons-material/Search";
+import Grid from '@mui/material/Grid';
 
 const mdTheme = createTheme();
 
@@ -26,7 +30,7 @@ export default function CustomerHome() {
     const [size, setSize] = React.useState(10);
     const [open, setOpen] = React.useState(false);
     const [rank, setRank] = React.useState(null);
-
+    
     React.useEffect(() => {
         if (!renderAfterCalled.current) {
             getRankList()
@@ -104,8 +108,7 @@ export default function CustomerHome() {
                     <Toolbar />
                     <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
                         <TableContainer component={Paper}>
-                            <TableButton add={{onClick: handleAddButton}} remove search />
-
+                            <SearchBar />
                             <Table sx={{ minWidth: 650 }} aria-label="simple table" stickyHeader >
                                 <TableHead>
                                     <TableRow>
@@ -164,6 +167,7 @@ export default function CustomerHome() {
                 </Box>
             </Box>
             <RankDetailDiaLog open={open} handleClose={handleClose} rank={rank} setAlertData={setAlertData} setAlertOpen={setAlertOpen} />
+            <RankAddDialog  open={openAdd} handleClose={hanldeCloseAdd} setAlertData={setAlertData} setAlertOpen={setAlertOpen}/>
             {/* <CustomerDetailDialog open={open} handleClose={handleClose} customer={customer}/> */}
             {/* <Dialog open={open} onClose={handleClose}>
             <DialogTitle>Subscribe</DialogTitle>
@@ -190,5 +194,61 @@ export default function CustomerHome() {
         </ThemeProvider>
 
     );
+
+    function SearchBar() {
+        return (
+            <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+                <Grid container spacing={2}>
+                    <TableButton add={{ onClick: handleAddButton }} remove />
+                    <Grid item xs={12} justifyContent="flex-end">
+                        <Grid container>
+                            <Grid item xs={10}>
+                                <Stack direction="row" spacing={2}>
+                                    <TextField
+                                        label="Rank name"
+                                        type="text"
+                                        variant="standard"
+                                        size="small"
+                                        inputProps={{
+                                            style: {
+                                                height: "15",
+                                            },
+                                        }}
+                                    />
+                                    <TextField
+                                        label="Require point"
+                                        type="text"
+                                        variant="standard"
+                                        size="small"
+                                        inputProps={{
+                                            style: {
+                                                height: "15",
+                                            },
+                                        }}
+                                    />
+                                    <TextField
+                                        label="Keep point"
+                                        type="text"
+                                        variant="standard"
+                                        size="small"
+                                        inputProps={{
+                                            style: {
+                                                height: "15",
+                                            },
+                                        }}
+                                    />
+                                    <IconButton color="primary" aria-label="upload picture" component="label" size="large">
+                                        <SearchIcon />
+                                    </IconButton>
+
+                                </Stack>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+
+                </Grid>
+            </Container>
+        )
+    }
 }
 
