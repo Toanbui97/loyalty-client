@@ -10,7 +10,10 @@ const updateCustomerInfo = process.env.REACT_APP_CMS_UPDATE_CUSTOMER;
 const receiveRankList = process.env.REACT_APP_CMS_RECEIVE_RANK_LIST;
 const receiveRankInform = process.env.REACT_APP_CMS_RECEIVE_RANK_DETAIL;
 const updateRankInform = process.env.REACT_APP_CMS_UPDATE_RANK_DETAIL
-
+const createRankUrl = process.env.REACT_APP_CMS_CREATE_RANK_URL;
+const createCustomerUrl = process.env.REACT_APP_CMS_CREATE_CUSTOMER_URL;
+const deleteCustomerUrl = process.env.REACT_APP_CMS_DELETE_CUSTOMER_URL;
+const deleteRankUrl = process.env.REACT_APP_CMS_DELETE_RANK_URL;
 // const setAlert = useAlert();
 
 const requestBody = {
@@ -76,6 +79,50 @@ export const updateRank = async (rank) => {
     requestBody.data = rank;
     console.log(requestBody);
     return await fetch(baseUrl+updateRankInform, {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json"
+        }, 
+        body: JSON.stringify(requestBody)
+    });
+}
+
+export const createRank = async (data) => {
+    requestBody.data = data;
+    console.log(JSON.stringify(requestBody));
+    return await fetch(getCMSUrl(createRankUrl, null, null), {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json"
+        }, 
+        body: JSON.stringify(requestBody)
+    });
+}
+
+export const createCustomer = async (data) => {
+    requestBody.data = data;
+    console.log(JSON.stringify(requestBody));
+    return await fetch(getCMSUrl(createCustomerUrl, null, null), {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json"
+        }, 
+        body: JSON.stringify(requestBody)
+    });
+}
+
+export const deleteCustomer = async (code) => {
+    return await fetch(getCMSUrl(deleteCustomerUrl, {customerCode: code}, null), {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json"
+        }, 
+        body: JSON.stringify(requestBody)
+    });
+}
+
+export const deleteRank = async (code) => {
+    return await fetch(getCMSUrl(deleteRankUrl, {rankCode: code}, null), {
         method: "POST",
         headers: {
             "Content-Type" : "application/json"

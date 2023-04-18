@@ -22,7 +22,7 @@ import Drawer from '../component/common/Drawer';
 import Copyright from '../component/common/Copyright';
 import { mainListItems, secondaryListItems } from '../component/common/MenuList';
 import Common from '../component/common/Common';
-import { getCustomerDetail, getCustomerList } from '../service/CMSService';
+import { deleteCustomer, getCustomerDetail, getCustomerList } from '../service/CMSService';
 import { CircularProgress, InputAdornment, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow } from '@mui/material';
 import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
 import CustomerDetailDialog from '../component/customer/CustomerDetailDiaLog';
@@ -38,12 +38,15 @@ import TableButton from '../component/common/TableButton';
 import { Stack } from '@mui/system';
 import SearchIcon from "@mui/icons-material/Search";
 import DeleteIcon from '@mui/icons-material/Delete';
+import CustomerAddDialog from '../component/customer/CustomerAddDialog';
+import useAlert from '../context/UseAler';
 
 
 const mdTheme = createTheme();
 
 
 export default function CustomerHome() {
+    const {setAlert} = useAlert();
     const renderAfterCalled = React.useRef(false);
     const [alertData, setAlertData] = React.useState({});
     const [alertOpen, setAlertOpen] = React.useState(false);
@@ -144,6 +147,18 @@ export default function CustomerHome() {
             setOpenAdd(false);
         }
     )
+
+    const deleteRow = (e, code) => {
+        e.stopPropagation()
+        deleteCustomer(code)
+            .then(res => res.json())
+            .then(data => {
+                setAlert(data);
+                hanldeCloseAdd();
+            })
+    }
+
+
     return (
 
         <ThemeProvider theme={mdTheme}>
@@ -174,6 +189,7 @@ export default function CustomerHome() {
                                         <TableCell align="right">RPoint</TableCell>
                                         <TableCell align="right">Rank</TableCell>
                                         <TableCell align="right">Voucher number</TableCell>
+                                        <TableCell align="center">Action</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 {customerList == null ? <CircularProgress /> : (
@@ -193,6 +209,7 @@ export default function CustomerHome() {
                                                 <TableCell align="right">{data.rpoint}</TableCell>
                                                 <TableCell align="right">{data.rankCode}</TableCell>
                                                 <TableCell align="right">{data.activeVoucher}</TableCell>
+                                                <TableCell align="center" onClick={e => deleteRow(e, data.customerCode)}><DeleteIcon /></TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
@@ -226,6 +243,8 @@ export default function CustomerHome() {
                 </Box>
             </Box>
             <CustomerDetailDialog open={open} handleClose={handleClose} customer={customer} setAlertData={setAlertData} setAlertOpen={setAlertOpen} />
+            <CustomerAddDialog open={openAdd} handleClose={hanldeCloseAdd} setAlertData={setAlertData} setAlertOpen={setAlertOpen} />
+
             {/* <Dialog open={open} onClose={handleClose}>
             <DialogTitle>Subscribe</DialogTitle>
             <DialogContent>

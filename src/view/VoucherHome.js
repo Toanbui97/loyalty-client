@@ -34,7 +34,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import AlertPopup from '../component/common/Arlert';
-import { getVoucherInfo, getVoucherList } from '../service/VoucherService';
+import { deleteVoucer, deleteVoucher, getVoucherInfo, getVoucherList } from '../service/VoucherService';
 import useAlert from '../context/UseAler';
 import VoucherDetailDialog from '../component/voucher/VoucherDetailDialog';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -156,6 +156,16 @@ export default function VoucherHome() {
         }
     )
 
+    const deleteRow = (e, code) => {
+        e.stopPropagation()
+        deleteVoucher(code)
+            .then(res => res.json())
+            .then(data => {
+                setAlert(data);
+                hanldeCloseAdd();
+            })
+    }
+
     return (
         <ThemeProvider theme={mdTheme}>
             <AlertPopup data={alertData} open={alertOpen} setOpen={setAlertOpen} onClose={handleCloseAlert} />
@@ -186,6 +196,7 @@ export default function VoucherHome() {
                                         <TableCell align="right">Total voucher</TableCell>
                                         <TableCell align="right">Discount percent</TableCell>
                                         <TableCell align="right">Price</TableCell>
+                                        <TableCell align="center">Action</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 {voucherList == null ? <CircularProgress /> : (
@@ -205,6 +216,7 @@ export default function VoucherHome() {
                                                 <TableCell align="right">{data.totalVoucher}</TableCell>
                                                 <TableCell align="right">{data.discountPercent}</TableCell>
                                                 <TableCell align="right">{data.price}</TableCell>
+                                                <TableCell align="center" onClick={e => deleteRow(e, data.voucherCode)}><DeleteIcon /></TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>

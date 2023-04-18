@@ -5,11 +5,11 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { CircularProgress, FormControl, Grid, Input, InputLabel} from '@mui/material';
-import { createRank, updateRank } from '../../service/CMSService';
+import { createCustomer, updateRank } from '../../service/CMSService';
 import useAlert from '../../context/UseAler';
 import { createVoucherInfo, updateVoucherInfo } from '../../service/VoucherService';
 
-export default function RankAddDialog(props) {
+export default function CustomerAddDialog(props) {
 
     const {setAlert} = useAlert();
     const data = {};
@@ -20,7 +20,7 @@ export default function RankAddDialog(props) {
 
     const handleAdd = (e) => {
         e.preventDefault();
-        createRank(data)
+        createCustomer(data) 
             .then(res => res.json())
             .then(data => {
                 setAlert(data);
@@ -33,33 +33,14 @@ export default function RankAddDialog(props) {
         <div>
                 <Dialog open={props.open} onClose={handleCancel} fullWidth={true} maxWidth={'lg'}>
                 <div>
-                    <DialogTitle>Add new</DialogTitle>
+                    <DialogTitle>Create customer</DialogTitle>
                     <DialogContent>
                         <Grid container spacing={4} >
-
-                        <Grid item xs={6}>
-                                <FormControl  variant="standard" fullWidth={true}>
-                                    <InputLabel htmlFor="rankCode">Rank code</InputLabel>
-                                    <Input id="rankCode" onChange={e => data.rankCode = e.target.value} />
-                                </FormControl>
-                            </Grid>
                             
                             <Grid item xs={6}>
                                 <FormControl  variant="standard" fullWidth={true}>
-                                    <InputLabel htmlFor="rankName">Rank name</InputLabel>
-                                    <Input id="rankName" onChange={e => data.rankName = e.target.value} />
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <FormControl  variant="standard" fullWidth={true}>
-                                    <InputLabel htmlFor="requirePoint">Requiere point</InputLabel>
-                                    <Input id="requirePoint"  onChange={e => data.requirePoint = e.target.value} />
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={6}>
-                                <FormControl variant="standard" fullWidth={true}>
-                                    <InputLabel htmlFor="keepPoint">Keep point</InputLabel>
-                                    <Input id="keepPoint" onChange={e => data.keepPoint = e.target.value} />
+                                    <InputLabel htmlFor="voucherName">Customer name</InputLabel>
+                                    <Input id="voucherName" onChange={e => data.customerName = e.target.value} />
                                 </FormControl>
                             </Grid>
                             

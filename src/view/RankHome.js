@@ -7,7 +7,7 @@ import Paper from '@mui/material/Paper';
 import Common from '../component/common/Common';
 import { CircularProgress, IconButton, Table, TableBody, TableCell, TableContainer, TableFooter, TableHead, TablePagination, TableRow, TextField } from '@mui/material';
 import TablePaginationActions from '@mui/material/TablePagination/TablePaginationActions';
-import { getRankDetail, getRankList } from '../service/CMSService';
+import { deleteRank, getRankDetail, getRankList } from '../service/CMSService';
 import RankDetailDiaLog from '../component/rank/RankDetailDialog';
 import TransitionAlerts from '../component/common/Arlert';
 import TableButton from '../component/common/TableButton';
@@ -15,11 +15,17 @@ import RankAddDialog from '../component/rank/RankAddDialog';
 import { Stack } from '@mui/system';
 import SearchIcon from "@mui/icons-material/Search";
 import Grid from '@mui/material/Grid';
+import useAlert from '../context/UseAler';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AlertPopup from '../component/common/Arlert';
+
 
 const mdTheme = createTheme();
 
 
 export default function CustomerHome() {
+    const {setAlert} = useAlert();
+
     const renderAfterCalled = React.useRef(false);
     const [alertData, setAlertData] = React.useState({});
     const [alertOpen, setAlertOpen] = React.useState(false);
@@ -86,10 +92,21 @@ export default function CustomerHome() {
         }
     )
 
+    const deleteRow = (e, code) => {
+        e.stopPropagation()
+        deleteRank(code)
+            .then(res => res.json())
+            .then(data => {
+                setAlert(data);
+                hanldeCloseAdd();
+            })
+    }
+
 
     return (
 
         <ThemeProvider theme={mdTheme}>
+            <AlertPopup data={alertData} open={alertOpen} setOpen={setAlertOpen} onClose={handleCloseAlert} />
             <Box sx={{ display: 'flex' }}>
 
                 <Common text="Rank home"/>
@@ -116,6 +133,7 @@ export default function CustomerHome() {
                                         <TableCell >Rank name</TableCell>
                                         <TableCell >Require point</TableCell>
                                         <TableCell >Keep point</TableCell>
+                                        <TableCell align="center">Action</TableCell>
                                     </TableRow>
                                 </TableHead>
                                 {rankList == null ? <CircularProgress /> : (
@@ -134,6 +152,7 @@ export default function CustomerHome() {
                                                 <TableCell>{data.rankName}</TableCell>
                                                 <TableCell>{data.requirePoint}</TableCell>
                                                 <TableCell>{data.keepPoint}</TableCell>
+                                                <TableCell align="center" onClick={e => deleteRow(e, data.rankCode)}><DeleteIcon /></TableCell>
                                             </TableRow>
                                         ))}
                                     </TableBody>
