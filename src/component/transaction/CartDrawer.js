@@ -10,30 +10,21 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
-import { Avatar, Badge, Tooltip } from '@mui/material';
+import { Avatar, Badge, Drawer, Tooltip } from '@mui/material';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import { ClickAwayListener } from '@mui/base';
 
 export default function CartDrawer() {
     const [openDrawer, setOpenDrawer] = React.useState(false);
 
-    const toggleDrawer = (open) => (event) => {
-        if (
-            event &&
-            event.type === 'keydown' &&
-            (event.key === 'Tab' || event.key === 'Shift')
-        ) {
-            return;
-        }
-
-        setOpenDrawer(!openDrawer);
+    const setOpenRightDrawer = (open) => (event) => {
+        setOpenDrawer(open);
     };
 
     const list = () => (
         <Box
-            sx={{ width: 250 }}
+            sx={{ width: 450 }}
             role="presentation"
-            onClick={toggleDrawer(false)}
-            onKeyDown={toggleDrawer(false)}
         >
             <List>
                 {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
@@ -50,7 +41,7 @@ export default function CartDrawer() {
             <Divider />
             <List>
                 {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                    <ListItem key={text} disablePadding>
+                    <ListItem key={text} >
                         <ListItemButton>
                             <ListItemIcon>
                                 {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
@@ -66,21 +57,28 @@ export default function CartDrawer() {
     return (
         <div>
             <React.Fragment >
-                <Tooltip title="Open settings">
-                    <Badge  color="primary">
-                        <Avatar onClick={toggleDrawer(true)} sx={{ p: 0 }}>
+                
+                        <Avatar onClick={setOpenRightDrawer(true)} sx={{ p: 0 }}>
                             <ShoppingCartOutlinedIcon fontSize="medium" />
                         </Avatar>
-                    </Badge>
-                </Tooltip>
+                <ClickAwayListener
+                    mouseEvent="onMouseDown"
+                    touchEvent="onTouchStart"
+                    onClickAway={() => openDrawer && setOpenRightDrawer(false)}
+                >
                 <SwipeableDrawer
                     anchor={'right'}
                     open={openDrawer}
-                    onClose={toggleDrawer(false)}
-                    onOpen={toggleDrawer(true)}
-                >
+                    onClose={(_, reason) => {
+                        if (reason === 'backdropClick') {
+                            setOpenDrawer(false)
+                        }
+                    }}
+                    onOpen={setOpenRightDrawer(false)}
+                >   
                     {list()}
                 </SwipeableDrawer>
+                </ClickAwayListener>
             </React.Fragment>
         </div>
     );

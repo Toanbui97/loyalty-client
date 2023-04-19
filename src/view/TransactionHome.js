@@ -246,14 +246,12 @@ function TransactionHome() {
                                 </Menu>
                             </Box>
                             <Box sx={{ flexGrow: 0 }}>
-                                <CartDrawer />
-                                {/* <Tooltip title="Open settings">
+                            <Tooltip title="Open settings">
                                     <Badge badgeContent={itemInCart} color="primary">
-                                        <Avatar onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                            <ShoppingCartOutlinedIcon fontSize="medium" />
-                                        </Avatar>
+                                        <CartDrawer />
                                     </Badge>
-                                </Tooltip> */}
+                                </Tooltip>
+                                
                                
                             </Box>
                         </Toolbar>
