@@ -11,13 +11,15 @@ import RankHome from './view/RankHome.js';
 import Home from "./view/Home.js";
 import AlertPopup from './component/common/Arlert.js';
 import VoucherHome from './view/VoucherHome.js';
+import TransactionHome from './view/TransactionHome.js';
 
 const App = () => {
     
     return(
         <Router history={createBrowserHistory()}>
           <Routes>
-            <Route path="/" element={<AlertPopup />, <Home />} />
+            <Route path="/" element={<TransactionHome />}/>
+            <Route path="/dashBoard" element={<AlertPopup />, <Home />} />
             <Route path="/customerHome" element={<CustomerHome />} />
             <Route path="/rankHome" element={<RankHome />} />
             <Route path="/voucherHome" element={<VoucherHome /> } />
