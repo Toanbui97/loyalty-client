@@ -24,6 +24,7 @@ import Product from '../component/transaction/Product';
 import { Stack } from '@mui/system';
 import LeftMenu from '../component/transaction/LeftMenu'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
+import CartDrawer from '../component/transaction/CartDrawer';
 
 
 const pages = ['Products', 'Pricing', 'Blog'];
@@ -109,6 +110,8 @@ function TransactionHome() {
     const removeToCart = () => {
         setItemInCartNumber(itemInCart - 1);
     }
+
+    
 
     return (
         <div>
@@ -243,14 +246,14 @@ function TransactionHome() {
                                 </Menu>
                             </Box>
                             <Box sx={{ flexGrow: 0 }}>
-
-                                <Tooltip title="Open settings">
+                                <CartDrawer />
+                                {/* <Tooltip title="Open settings">
                                     <Badge badgeContent={itemInCart} color="primary">
-                                        <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                                            <ShoppingCartOutlinedIcon fontSize="large" />
-                                        </IconButton>
+                                        <Avatar onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                                            <ShoppingCartOutlinedIcon fontSize="medium" />
+                                        </Avatar>
                                     </Badge>
-                                </Tooltip>
+                                </Tooltip> */}
                                
                             </Box>
                         </Toolbar>
