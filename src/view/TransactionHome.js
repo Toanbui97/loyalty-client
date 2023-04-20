@@ -23,9 +23,25 @@ import { CategoriesDropDown } from '../component/transaction/CategoriesDropDown'
 import Product from '../component/transaction/Product';
 import { Stack } from '@mui/system';
 import LeftMenu from '../component/transaction/LeftMenu'
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import CartDrawer from '../component/transaction/CartDrawer';
-
+import { ButtonUnstyled, buttonUnstyledClasses } from '@mui/base';
+import { useSnackbar } from 'notistack';
+import LocalMallOutlinedIcon from '@mui/icons-material/LocalMallOutlined';
+import { ClickAwayListener } from '@mui/base';
+import SwipeableDrawer from '@mui/material/SwipeableDrawer';
+import CloseIcon from '@mui/icons-material/Close';
+import Divider from '@mui/material/Divider';
+import List from '@mui/material/List';
+import Card from '@mui/material/Card';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import CardHeader from '@mui/material/CardHeader';
+import HoverRating from '../component/transaction/HoverRating';
+import CardActions from '@mui/material/CardActions';
+import IndeterminateCheckBoxOutlinedIcon from '@mui/icons-material/IndeterminateCheckBoxOutlined';
+import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -82,8 +98,6 @@ const Item = styled(Button)(({ theme }) => ({
     color: theme.palette.text.secondary,
 }));
 
-const itemNumber = 20;
-const product = { name: 'Police Gray Eyeglasses', code: '1s2fe', price: 1234, rate: 3 };
 const initData = () => {
     let arr = [];
     for (let i = 0; i <= 15; i++) {
@@ -93,14 +107,36 @@ const initData = () => {
 }
 
 function TransactionHome() {
-
+    const { enqueueSnackbar } = useSnackbar();
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
     const [itemInCartNumber, setItemInCartNumber] = React.useState(0);
     const [listItemInCart, setListItemInCart] = React.useState([]);
     const [productList, setProductList] = React.useState(initData());
+    const [openDrawer, setOpenDrawer] = React.useState(false);
 
-    
+
+    const setOpenRightDrawer = (open) => (event) => {
+        setOpenDrawer(open);
+    };
+
+
+    const showNoti = (message, variant) => {
+        // variant could be success, error, warning, info, or default
+        enqueueSnackbar({ message, variant });
+    };
+
+    const deleteItemInCart = (e, item) => {
+        e.stopPropagation();
+        e.preventDefault();
+        let arr = [...listItemInCart];
+        if (item) {
+            let index = arr.findIndex(e => e.code == item.code)
+            arr.splice(index, 1)
+        }
+        setListItemInCart(arr);
+        showNoti("Remove from Cart", 'error');
+    }
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -120,18 +156,25 @@ function TransactionHome() {
     const addToCart = React.useCallback((e, product) => {
         e.stopPropagation();
         console.log(listItemInCart.length)
-        // setItemInCartNumber(itemInCartNumber + 1);
-        // product.id = 20;
-        if (listItemInCart.find(e => e.code == product.code)) { 
+        if (listItemInCart.find(e => e.code == product.code)) {
             listItemInCart.forEach(e => {
-                e.number = e.code == product.code ?  e.number + 1 : e.number;
+                e.number = e.code == product.code ? e.number + 1 : e.number;
             })
         } else {
             product.number = 1;
             listItemInCart.push(product)
         }
+
         setListItemInCart(listItemInCart);
-        setItemInCartNumber(listItemInCart.map(e => e.number).reduce((s1, s2) => s1 + s2, 0));
+        let  totalNumber = listItemInCart.map(e => e.number).reduce((s1, s2) => s1 + s2, 0);
+        console.log(totalNumber)
+
+        setItemInCartNumber(totalNumber);
+
+        productList.find(p => p.code = product.code).number=listItemInCart.find(e => e.code = product.code).number
+
+        setProductList(productList);
+        console.log(productList);
         console.log(listItemInCart)
     })
 
@@ -150,13 +193,19 @@ function TransactionHome() {
         if (item && item.number > 1) {
             item.number = item.number - 1;
         }
+        console.log(listItemInCart)
 
         setListItemInCart(listItemInCart);
-        setItemInCartNumber(listItemInCart.map(e => e.number).reduce((s1, s2) => s1 + s2, 0));
+        let number = listItemInCart.map(e => e.number).reduce((s1, s2) => s1 + s2, 0);
+        console.log(number)
+        setItemInCartNumber(number);
+
+        productList.find(p => p.code = product.code).number=listItemInCart.find(e => e.code = product.code).number
+        setProductList(productList);
+        console.log(productList);
         console.log(listItemInCart)
 
     }
-
 
 
     return (
@@ -294,9 +343,98 @@ function TransactionHome() {
                             <Box sx={{ flexGrow: 0 }}>
 
                                 <Badge badgeContent={listItemInCart.map(e => e.number).reduce((s1, s2) => s1 + s2, 0)} sx={{ color: 'rgb(210, 63, 87)' }} color="error">
-                                    <CartDrawer listItemInCart={listItemInCart} setListItemInCart={setListItemInCart} 
+                                    {/* <CartDrawer listItemInCart={listItemInCart} setListItemInCart={setListItemInCart} 
                                         addToCart={(e, item) => addToCart(e, item)} removeToCart={(e, item) => removeToCart(e,item)} 
-                                    />
+                                    /> */}
+                                    <React.Fragment >
+                                        <Avatar onClick={setOpenRightDrawer(true)} sx={{ p: 0 }}>
+                                            <LocalMallOutlinedIcon fontSize="medium" />
+                                        </Avatar>
+                                        <ClickAwayListener
+                                            mouseEvent="onMouseDown"
+                                            touchEvent="onTouchStart"
+                                            onClickAway={() => openDrawer && setOpenRightDrawer(false)}
+                                        >
+                                            <SwipeableDrawer
+                                                anchor={'right'}
+                                                open={openDrawer}
+                                                onClose={(_, reason) => {
+                                                    if (reason === 'backdropClick') {
+                                                        setOpenDrawer(false)
+                                                    }
+                                                }}
+                                                onOpen={setOpenRightDrawer(false)}
+                                            >
+                                                <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', height: '100%' }}>
+                                                    <Grid xs={12}
+                                                        container
+                                                        justifyContent="space-between"
+                                                        flexDirection={{ xs: 'column', sm: 'row' }}
+                                                        sx={{ fontSize: '10px', margin: '3em 0 3em 0', padding: '0 1em 0 1em' }}
+                                                    >
+                                                        <Grid container xs={9} display="flex" justifyContent="flex-start" alignItems="flex-start">
+                                                            <Stack direction="row" alignItems="center" gap={1}>
+                                                                <LocalMallOutlinedIcon fontSize="medium" />
+                                                                <Typography variant="body1"> {listItemInCart.map(e => e.number).reduce((s1, s2) => s1 + s2, 0)} item</Typography>
+                                                            </Stack>
+                                                        </Grid>
+                                                        <Grid xs={3} display="flex" justifyContent="flex-end" alignItems="flex-end">
+                                                            <CloseIcon fontSize="medium" />
+                                                        </Grid>
+                                                    </Grid>
+
+                                                    {listItemInCart && listItemInCart.length ? listItemInCart.map(item => (
+                                                        <Box
+                                                            sx={{ width: 420, padding: '1em' }}
+                                                            role="presentation"
+                                                        >
+                                                            <Divider />
+                                                            <List >
+                                                                <Card sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }} >
+                                                                    <Grid xs={12}
+                                                                        container
+                                                                        flexDirection={{ xs: 'column', sm: 'row' }}
+                                                                    >
+                                                                        <Grid xs={1} display="flex" justifyContent="center" alignItems="center" flexDirection='column' gap={1}>
+                                                                            <IconButton onClick={(e) => addToCart(e, item)}><AddCircleOutlineOutlinedIcon  color='success' /></IconButton>
+                                                                            <Typography >{item.number}</Typography>
+                                                                            <IconButton onClick={e => removeToCart(e, item)}><RemoveCircleOutlineOutlinedIcon  sx={{ color: 'rgb(210, 63, 87)' }} /></IconButton>
+                                                                            {/* <CloseIcon fontSize="medium" /> */}
+                                                                        </Grid>
+
+                                                                        <Grid xs={7} display="flex" justifyContent="flex-start" alignItems="flex-start">
+                                                                            <CardContent sx={{ flex: '1 0 auto' }}>
+                                                                                <Typography component="div" variant="body1">
+                                                                                    {item.name}
+                                                                                </Typography>
+                                                                                <Typography variant="subtitle1" color="text.secondary" component="div">
+                                                                                    {item.code}
+                                                                                </Typography>
+                                                                            </CardContent>
+                                                                        </Grid>
+                                                                        <Grid xs={3} display="flex" justifyContent="flex-end" alignItems="center">
+                                                                            <CardMedia
+                                                                                component="img"
+                                                                                sx={{ width: 130 }}
+                                                                                image="https://bazaar.ui-lib.com/assets/images/products/Fashion/Accessories/9.RayBanBlack.png"
+                                                                                alt="Live from space album cover"
+                                                                            />
+                                                                        </Grid>
+                                                                        <Grid xs={1} display="flex" justifyContent="flex-start" alignItems="center">
+                                                                            <IconButton onClick={(e) => deleteItemInCart(e, item)}>
+                                                                                <CloseIcon fontSize="medium" />
+                                                                            </IconButton>
+                                                                        </Grid>
+                                                                    </Grid>
+                                                                </Card>
+                                                            </List>
+                                                        </Box>
+                                                    )) : ""}
+                                                    <Box sx={{ marginBottom: '2em', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center' }}><UnstyledButtonsSimple /></Box>
+                                                </Box>
+                                            </SwipeableDrawer>
+                                        </ClickAwayListener>
+                                    </React.Fragment>
                                 </Badge>
 
 
@@ -362,9 +500,57 @@ function TransactionHome() {
                         <Grid style={{ marginTop: '2em', }} columnSpacing={2} container xs={11} display="flex" justifyContent="center" alignItems="flex-start" rowSpacing={2}>
                             <Grid xs={3} > <LeftMenu /></Grid>
                             <Grid container display="flex" justifyContent="flex-start" alignItems="flex-start" xs={9}>
-                                {productList.length ? productList.map(product => (
+                                {productList.length ? productList.map(item => (
                                     <Grid xs={4} >
-                                        <Product product={product} addToCart={(e) => addToCart(e, product)} removeToCart={(e) => removeToCart(e,product)} />
+                                        {/* <Product product={product} addToCart={(e) => addToCart(e, product)} removeToCart={(e) => removeToCart(e, product)} /> */}
+                                        <Card sx={{ maxWidth: 330, marginBottom: '2em', backgroundColor: '#fff', boxShadow: '0px 1px 3px rgba(3, 0, 71, 0.09)', borderRadius: 3 }}>
+                                            <CardHeader
+                                                subheader="September 14, 2016"
+                                            />
+                                            <CardMedia
+                                                component="img"
+                                                height="230"
+                                                image="https://bazaar.ui-lib.com/_next/image?url=%2Fassets%2Fimages%2Fproducts%2FFashion%2FAccessories%2F7.PoliceGrayEyeglasses.png&w=640&q=75"
+                                                alt="Paella dish"
+                                            />
+                                            <CardContent>
+                                                <Typography variant="body1" color="">
+                                                    {item.name}
+                                                </Typography>
+                                                <HoverRating />
+
+                                            </CardContent>
+                                            <CardActions disableSpacing>
+                                                <Grid container xs={12} justifyContent="space-between"
+                                                    flexDirection={{ xs: 'column', sm: 'row' }}>
+                                                    <Grid xs={3} display="flex" justifyContent="center" alignItems="center">
+                                                        <Typography variant="body1" color="rgb(210, 63, 87)">
+                                                            ${item.price}
+                                                        </Typography>
+                                                    </Grid>
+                                                    <Grid xs={9} display="flex" justifyContent="flex-end" alignItems="center">
+
+                                                        {item.number && item.number > 0 ? (
+                                                            <>
+                                                                <IconButton onClick={(e) => removeToCart(e, item)}>
+                                                                    <IndeterminateCheckBoxOutlinedIcon style={{ color: 'rgb(210, 63, 87)' }} />
+                                                                </IconButton>
+
+                                                                <Typography variant="body1" >
+                                                                    {item.number}
+                                                                </Typography>
+                                                            </>
+                                                        ) : ""}
+
+                                                        <IconButton onClick={(e) => addToCart(e, item)}>
+                                                            <AddBoxOutlinedIcon style={{ color: 'rgb(210, 63, 87)' }} />
+                                                        </IconButton>
+                                                    </Grid>
+
+                                                </Grid>
+                                            </CardActions>
+
+                                        </Card>
                                     </Grid>)
                                 ) : ""}
 
@@ -379,5 +565,52 @@ function TransactionHome() {
         </div>
     );
 }
+
+
+const UnstyledButtonsSimple = () => {
+    return (
+        <Stack spacing={2} direction="row" width="90%">
+            <CustomButton>Payment</CustomButton>
+        </Stack>
+    );
+}
+
+const blue = {
+    500: '#007FFF',
+    600: '#0072E5',
+    700: '#0059B2',
+};
+
+const CustomButton = styled(ButtonUnstyled)`
+  font-family: IBM Plex Sans, sans-serif;
+  font-weight: bold;
+  font-size: 0.875rem;
+  background-color: rgb(210, 63, 87);
+  padding: 12px 24px;
+  border-radius: 12px;
+  color: white;
+  transition: all 150ms ease;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+
+  &:hover {
+    background-color:rgb(210, 63, 87);
+  }
+
+  &.${buttonUnstyledClasses.active} {
+    background-color: rgb(210, 63, 87);
+  }
+
+  &.${buttonUnstyledClasses.focusVisible} {
+    box-shadow: 0 4px 20px 0 rgba(61, 71, 82, 0.1), 0 0 0 5px rgba(0, 127, 255, 0.5);
+    outline: none;
+  }
+
+  &.${buttonUnstyledClasses.disabled} {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+`;
 
 export default TransactionHome;

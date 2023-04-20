@@ -13,7 +13,7 @@ export default function LeftMenu() {
     return (
         <Paper sx={{ width: 300, backgroundColor:'#fff' }}>
             <MenuList dense>
-                <MenuItem disable>
+                <MenuItem disable="true">
                     <ListItemText ><Typography style={{ fontWeight: 'bold' }}>Categories</Typography></ListItemText>
                 </MenuItem>
                 <MenuItem>

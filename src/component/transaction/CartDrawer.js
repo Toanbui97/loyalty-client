@@ -5,22 +5,45 @@ import List from '@mui/material/List';
 import Divider from '@mui/material/Divider';
 import { Avatar, Typography } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { ClickAwayListener } from '@mui/base';
 import CloseIcon from '@mui/icons-material/Close';
 import LocalMallOutlinedIcon from '@mui/icons-material/LocalMallOutlined';
 import { Stack } from '@mui/system';
-import CartProduct from './CartProduct';
 import ButtonUnstyled, { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled';
 import { styled } from '@mui/system';
-
+import { useSnackbar } from 'notistack';
+import Card from '@mui/material/Card';
+import IconButton from '@mui/material/IconButton';
+import AddCircleOutlineOutlinedIcon from '@mui/icons-material/AddCircleOutlineOutlined';
+import RemoveCircleOutlineOutlinedIcon from '@mui/icons-material/RemoveCircleOutlineOutlined';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
 
 export default function CartDrawer(props) {
+    const { enqueueSnackbar } = useSnackbar();
 
     const [openDrawer, setOpenDrawer] = React.useState(false);
     const setOpenRightDrawer = (open) => (event) => {
         setOpenDrawer(open);
     };
+
+
+    const showNoti = (message, variant) => {
+        // variant could be success, error, warning, info, or default
+        enqueueSnackbar({ message, variant });
+    };
+
+    const deleteItemInCart = (e, item) => {
+        e.stopPropagation();
+        e.preventDefault();
+        let arr = [...props.listItemInCart];
+        if (item) {
+            let index = arr.findIndex(e => e.code == item.code)
+            arr.splice(index, 1)
+        }
+        props.setListItemInCart(arr);
+        showNoti("Remove from Cart", 'error');
+    }
 
 
     return (
@@ -44,7 +67,7 @@ export default function CartDrawer(props) {
                         }}
                         onOpen={setOpenRightDrawer(false)}
                     >
-                        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', height: '100%'}}>
+                        <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'flex-start', height: '100%' }}>
                             <Grid xs={12}
                                 container
                                 justifyContent="space-between"
@@ -62,24 +85,60 @@ export default function CartDrawer(props) {
                                 </Grid>
                             </Grid>
 
-                            { props.listItemInCart && props.listItemInCart.length ?  props.listItemInCart.map(item => (
+                            {props.listItemInCart && props.listItemInCart.length ? props.listItemInCart.map(item => (
                                 <Box
                                     sx={{ width: 420, padding: '1em' }}
                                     role="presentation"
                                 >
                                     <Divider />
                                     <List>
-                                        <CartProduct 
+                                        {/* <CartProduct 
                                             listItemInCart={props.listItemInCart} 
                                             setListItemInCart={props.setListItemInCart} 
                                             item={item} addToCart={(e) => props.addToCart(e, item)} removeToCart={(e) => props.removeToCart(e, item)} 
-                                        />
+                                        /> */}
+                                        <Card sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', alignItems: 'center' }}>
+                                            <Grid xs={12}
+                                                container
+                                                flexDirection={{ xs: 'column', sm: 'row' }}
+                                            // sx={{ fontSize: '10px', margin: '3em 0 3em 0', padding: '0 1em 0 1em' }}
+                                            >
+                                                <Grid xs={1} display="flex" justifyContent="center" alignItems="center" flexDirection='column' gap={1}>
+                                                    <IconButton><AddCircleOutlineOutlinedIcon onClick={(e) => props.addToCart(e, item)} color='success' /></IconButton>
+                                                    <Typography >{item.number}</Typography>
+                                                    <IconButton><RemoveCircleOutlineOutlinedIcon onClick={e => props.removeToCart(e, item)} sx={{ color: 'rgb(210, 63, 87)' }} /></IconButton>
+                                                    {/* <CloseIcon fontSize="medium" /> */}
+                                                </Grid>
+
+                                                <Grid xs={7} display="flex" justifyContent="flex-start" alignItems="flex-start">
+                                                    <CardContent sx={{ flex: '1 0 auto' }}>
+                                                        <Typography component="div" variant="body1">
+                                                            {item.name}
+                                                        </Typography>
+                                                        <Typography variant="subtitle1" color="text.secondary" component="div">
+                                                            {item.code}
+                                                        </Typography>
+                                                    </CardContent>
+                                                </Grid>
+                                                <Grid xs={3} display="flex" justifyContent="flex-end" alignItems="center">
+                                                    <CardMedia
+                                                        component="img"
+                                                        sx={{ width: 130 }}
+                                                        image="https://bazaar.ui-lib.com/assets/images/products/Fashion/Accessories/9.RayBanBlack.png"
+                                                        alt="Live from space album cover"
+                                                    />
+                                                </Grid>
+                                                <Grid xs={1} display="flex" justifyContent="flex-start" alignItems="center">
+                                                    <IconButton onClick={(e) => deleteItemInCart(e, props.item)}>
+                                                        <CloseIcon fontSize="medium" />
+                                                    </IconButton>
+                                                </Grid>
+                                            </Grid>
+                                        </Card>
                                     </List>
                                 </Box>
                             )) : ""}
-
-                            <Box sx={{ marginBottom: '2em', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center'}}><UnstyledButtonsSimple /></Box>
-                            
+                            <Box sx={{ marginBottom: '2em', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center' }}><UnstyledButtonsSimple /></Box>
                         </Box>
                     </SwipeableDrawer>
                 </ClickAwayListener>
