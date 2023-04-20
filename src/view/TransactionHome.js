@@ -83,10 +83,24 @@ const Item = styled(Button)(({ theme }) => ({
 }));
 
 const itemNumber = 20;
+const product = { name: 'Police Gray Eyeglasses', code: '1s2fe', price: 1234, rate: 3 };
+const initData = () => {
+    let arr = [];
+    for (let i = 0; i <= 15; i++) {
+        arr.push({ name: 'Police Gray Eyeglasses' + i, code: '1s2fert' + i, price: 1234, rate: 3 });
+    }
+    return arr;
+}
+
 function TransactionHome() {
+
     const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
-    const [itemInCart, setItemInCartNumber] = React.useState(0);
+    const [itemInCartNumber, setItemInCartNumber] = React.useState(0);
+    const [listItemInCart, setListItemInCart] = React.useState([]);
+    const [productList, setProductList] = React.useState(initData());
+
+    
 
     const handleOpenNavMenu = (event) => {
         setAnchorElNav(event.currentTarget);
@@ -103,20 +117,52 @@ function TransactionHome() {
         setAnchorElUser(null);
     };
 
-    const addToCart = () => {
-        setItemInCartNumber(itemInCart + 1);
+    const addToCart = React.useCallback((e, product) => {
+        e.stopPropagation();
+        console.log(listItemInCart.length)
+        // setItemInCartNumber(itemInCartNumber + 1);
+        // product.id = 20;
+        if (listItemInCart.find(e => e.code == product.code)) { 
+            listItemInCart.forEach(e => {
+                e.number = e.code == product.code ?  e.number + 1 : e.number;
+            })
+        } else {
+            product.number = 1;
+            listItemInCart.push(product)
+        }
+        setListItemInCart(listItemInCart);
+        setItemInCartNumber(listItemInCart.map(e => e.number).reduce((s1, s2) => s1 + s2, 0));
+        console.log(listItemInCart)
+    })
+
+    const removeToCart = (e, product) => {
+        e.stopPropagation();
+        e.preventDefault()
+        let item = listItemInCart.find(e => e.code == product.code);
+
+        if (item && item.number <= 1) {
+            let copy = [...listItemInCart];
+            let index = listItemInCart.findIndex(e => e.code == product.code)
+            listItemInCart.splice(index, 1)
+            // setListItemInCart(copy);
+        }
+
+        if (item && item.number > 1) {
+            item.number = item.number - 1;
+        }
+
+        setListItemInCart(listItemInCart);
+        setItemInCartNumber(listItemInCart.map(e => e.number).reduce((s1, s2) => s1 + s2, 0));
+        console.log(listItemInCart)
+
     }
 
-    const removeToCart = () => {
-        setItemInCartNumber(itemInCart - 1);
-    }
 
-    
 
     return (
         <div>
             <div style={{ backgroundColor: '#F6F9FC' }}>
-                <AppBar position="static" color="transparent" elevation={0} style={{ backgroundColor: '#fff', margin: 0, boxShadow:'0px 1px 3px rgba(3, 0, 71, 0.09)' }}>
+                <AppBar position="static" color="transparent" elevation={0} style={{ backgroundColor: '#fff', margin: 0, boxShadow: '0px 1px 3px rgba(3, 0, 71, 0.09)' }}>
                     <Container maxWidth="xl">
                         <Toolbar disableGutters>
                             <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
@@ -246,17 +292,19 @@ function TransactionHome() {
                                 </Menu>
                             </Box>
                             <Box sx={{ flexGrow: 0 }}>
-                            <Tooltip title="Open settings">
-                                    <Badge badgeContent={itemInCart} color="primary">
-                                        <CartDrawer />
-                                    </Badge>
-                                </Tooltip>
-                                
-                               
+
+                                <Badge badgeContent={listItemInCart.map(e => e.number).reduce((s1, s2) => s1 + s2, 0)} sx={{ color: 'rgb(210, 63, 87)' }} color="error">
+                                    <CartDrawer listItemInCart={listItemInCart} setListItemInCart={setListItemInCart} 
+                                        addToCart={(e, item) => addToCart(e, item)} removeToCart={(e, item) => removeToCart(e,item)} 
+                                    />
+                                </Badge>
+
+
+
                             </Box>
                         </Toolbar>
                     </Container>
-                    <Container maxWidth='xl' >
+                    <Container maxWidth='lg' >
                         <Grid
                             xs={12}
                             container
@@ -290,7 +338,6 @@ function TransactionHome() {
                         </Grid>
                     </Container>
                 </AppBar>
-
                 <Container maxWidth="xl" >
                     <Grid container xs={12} display="flex" justifyContent="center" alignItems="center" >
                         <Grid style={{ backgroundColor: '#fff', marginTop: '2em', margonBottom: '2em', borderRadius: '10px' }}
@@ -314,24 +361,12 @@ function TransactionHome() {
 
                         <Grid style={{ marginTop: '2em', }} columnSpacing={2} container xs={11} display="flex" justifyContent="center" alignItems="flex-start" rowSpacing={2}>
                             <Grid xs={3} > <LeftMenu /></Grid>
-                            <Grid container display="flex" justifyContent="center" alignItems="flex-start" xs={9}>
-                                <Grid xs={4} >
-                                    <Product addToCart={addToCart} removeToCart={removeToCart}/>
-                                    <Product addToCart={addToCart} removeToCart={removeToCart}/>
-                                    <Product addToCart={addToCart} removeToCart={removeToCart}/>
-                                </Grid>
-                                <Grid xs={4} >
-                                    <Product addToCart={addToCart} removeToCart={removeToCart}/>
-                                    <Product addToCart={addToCart} removeToCart={removeToCart}/>
-                                    <Product addToCart={addToCart} removeToCart={removeToCart}/>
-                                </Grid>
-                                <Grid xs={4}>
-                                    <Product addToCart={addToCart} removeToCart={removeToCart}/>
-                                    <Product addToCart={addToCart} removeToCart={removeToCart}/>
-                                    <Product addToCart={addToCart} removeToCart={removeToCart}/>
-
-                                </Grid>
-
+                            <Grid container display="flex" justifyContent="flex-start" alignItems="flex-start" xs={9}>
+                                {productList.length ? productList.map(product => (
+                                    <Grid xs={4} >
+                                        <Product product={product} addToCart={(e) => addToCart(e, product)} removeToCart={(e) => removeToCart(e,product)} />
+                                    </Grid>)
+                                ) : ""}
 
                             </Grid>
 

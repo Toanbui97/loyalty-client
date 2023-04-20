@@ -50,60 +50,59 @@ export default function Product(props) {
     const handleClickAdd = (e) => {
 
         showNoti("Added to Cart" , 'success');
-        props.addToCart();
+        props.addToCart(e);
         setCurrentNumber(currentNumber + 1);
     }
 
     const handleClickMinus = (e) => {
         showNoti("Remove from Cart", 'error');
-        props.removeToCart();
+        props.removeToCart(e);
         setCurrentNumber(currentNumber - 1);
     }
 
     return (
-        <Card sx={{ maxWidth: 345, marginBottom: '2em', backgroundColor:'#fff' }}>
+        <Card sx={{ maxWidth: 330, marginBottom: '2em', backgroundColor:'#fff', boxShadow: '0px 1px 3px rgba(3, 0, 71, 0.09)', borderRadius:3 }}>
             <CardHeader
-                avatar={
-                    <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-                        R
-                    </Avatar>
-                }
-                action={
-                    <IconButton aria-label="settings">
-                        <MoreVertIcon />
-                    </IconButton>
-                }
-                title="Shrimp and Chorizo Paella"
+                // avatar={
+                //     <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+                //         R
+                //     </Avatar>
+                // }
+                // action={
+                //     <IconButton aria-label="settings">
+                //         <MoreVertIcon />
+                //     </IconButton>
+                // }
+                // title="Shrimp and Chorizo Paella"
                 subheader="September 14, 2016"
             />
             <CardMedia
                 component="img"
-                height="194"
+                height="230"
                 image="https://bazaar.ui-lib.com/_next/image?url=%2Fassets%2Fimages%2Fproducts%2FFashion%2FAccessories%2F7.PoliceGrayEyeglasses.png&w=640&q=75"
                 alt="Paella dish"
             />
             <CardContent>
-                <Typography variant="h6" color="">
-                    Police Gray Eyeglasse
+                <Typography variant="body1" color="">
+                    {props.product.name}
                 </Typography>
                 <HoverRating />
-
 
             </CardContent>
             <CardActions disableSpacing>
                 <Grid container xs={12} justifyContent="space-between"
                     flexDirection={{ xs: 'column', sm: 'row' }}>
                     <Grid xs={3} display="flex" justifyContent="center" alignItems="center">
-                        <Typography variant="body1" color="red">
-                            $187.00
+                        <Typography variant="body1" color="rgb(210, 63, 87)">
+                            ${props.product.price}
                         </Typography>
                     </Grid>
                     <Grid xs={9} display="flex" justifyContent="flex-end" alignItems="center">
 
                         {currentNumber > 0 ? (
                             <>
-                                <IconButton onClick={handleClickMinus}>
-                                    <IndeterminateCheckBoxOutlinedIcon style={{ color: 'red' }} />
+                                <IconButton onClick={(e) => handleClickMinus(e)}>
+                                    <IndeterminateCheckBoxOutlinedIcon style={{ color: 'rgb(210, 63, 87)' }} />
                                 </IconButton>
 
                                 <Typography variant="body1" >
@@ -112,8 +111,8 @@ export default function Product(props) {
                             </>
                         ) : ""}
 
-                        <IconButton onClick={handleClickAdd}>
-                            <AddBoxOutlinedIcon style={{ color: 'red' }} />
+                        <IconButton onClick={(e) => handleClickAdd(e)}>
+                            <AddBoxOutlinedIcon style={{ color: 'rgb(210, 63, 87)' }} />
                         </IconButton>
                     </Grid>
 

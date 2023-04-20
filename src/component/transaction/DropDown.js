@@ -413,7 +413,7 @@ const styles = `
     &:hover {
       // background: ${grey[50]};
       // border-color: ${grey[300]};
-      color: red
+      color: rgb(210, 63, 87)
     }
   
     &:focus {
