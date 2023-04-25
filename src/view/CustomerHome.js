@@ -77,7 +77,7 @@ export default function CustomerHome() {
         }
 
         renderAfterCalled.current = true;
-    })
+    }, [])
 
 
     const handleChangePage = React.useCallback(

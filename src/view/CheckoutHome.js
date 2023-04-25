@@ -15,7 +15,7 @@ import AdbIcon from '@mui/icons-material/Adb';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import { styled, alpha } from '@mui/material/styles';
-import { Badge, Paper } from '@mui/material';
+import { Badge, Checkbox, Dialog, DialogTitle, ListItem, ListItemButton, ListItemText, Paper } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { HomeDropDown, PageDropDown, UserAccountDropDown } from '../component/transaction/DropDown';
 import BootstrapButton from '../component/transaction/BootstrapButton';
@@ -42,8 +42,16 @@ import HoverRating from '../component/transaction/HoverRating';
 import CardActions from '@mui/material/CardActions';
 import IndeterminateCheckBoxOutlinedIcon from '@mui/icons-material/IndeterminateCheckBoxOutlined';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
+import { useLocation } from "react-router";
+import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { orchestratrionTransaction } from '../service/TransactionService';
-import { useNavigate } from "react-router-dom";
+import { getCustomerVoucher } from '../service/VoucherService';
+import VoucherDialog from '../component/transaction/VoucherDialog';
+import PersonIcon from '@mui/icons-material/Person';
+import AddIcon from '@mui/icons-material/Add';
+import { change } from 'redux-form';
+
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
@@ -91,35 +99,43 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-const Item = styled(Button)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: theme.palette.text.secondary,
-}));
+export default function CheckoutHome() {
 
-const initData = () => {
-    let arr = [];
-    for (let i = 0; i <= 15; i++) {
-        arr.push({ name: 'Police Gray Eyeglasses' + i, code: '1s2fert' + i, price: 1234, rate: 3 });
-    }
-    return arr;
-}
+    const location = useLocation();
 
-function TransactionHome() {
     const { enqueueSnackbar } = useSnackbar();
-    const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [anchorElUser, setAnchorElUser] = React.useState(null);
+    const [anchorElNav, setAnchorElNav] = React.useState(null);
     const [itemInCartNumber, setItemInCartNumber] = React.useState(0);
-    const [listItemInCart, setListItemInCart] = React.useState([]);
-    const [productList, setProductList] = React.useState(initData());
+    const [listItem, setListItem] = React.useState(location.state.listItem);
     const [openDrawer, setOpenDrawer] = React.useState(false);
-    const navigate = useNavigate();
+    const [voucherList, setVoucherList] = React.useState([]);
+    const [voucherApplyList, setVoucherApplyList] = React.useState([]);
+    const [openVoucherDialog, setOpenVoucherDialog] = React.useState(false);
+
+
+    const handleClickOpenVoucherDialog = () => {
+        setOpenVoucherDialog(true);
+    };
+
+    const handleCloseVoucherDialog = (value) => {
+        setOpenVoucherDialog(false);
+    };
 
     const setOpenRightDrawer = (open) => (event) => {
         setOpenDrawer(open);
     };
+
+    React.useEffect(() => {
+        getCustomerVoucher('c448768f-a5d7-40ba-8248-fe9007c4313f')
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+                setVoucherList(data.dataList)
+            })
+
+        console.log(voucherList)
+    }, [])
 
 
     const showNoti = (message, variant) => {
@@ -130,12 +146,12 @@ function TransactionHome() {
     const deleteItemInCart = (e, item) => {
         e.stopPropagation();
         e.preventDefault();
-        let arr = [...listItemInCart];
+        let arr = [...listItem];
         if (item) {
             let index = arr.findIndex(e => e.code == item.code)
             arr.splice(index, 1)
         }
-        setListItemInCart(arr);
+        setListItem(arr);
         showNoti("Remove from Cart", 'error');
     }
 
@@ -156,25 +172,23 @@ function TransactionHome() {
 
     const addToCart = React.useCallback((e, product) => {
         e.stopPropagation();
-        console.log(listItemInCart.length)
-        if (listItemInCart.find(e => e.code == product.code)) {
-            listItemInCart.forEach(e => {
+        console.log(listItem.length)
+        if (listItem.find(e => e.code == product.code)) {
+            listItem.forEach(e => {
                 e.number = e.code == product.code ? e.number + 1 : e.number;
             })
         } else {
             product.number = 1;
-            listItemInCart.push(product)
+            listItem.push(product)
         }
 
-        setListItemInCart(listItemInCart);
-        let totalNumber = listItemInCart.map(e => e.number).reduce((s1, s2) => s1 + s2, 0);
+        setListItem(listItem);
+        let totalNumber = listItem.map(e => e.number).reduce((s1, s2) => s1 + s2, 0);
         console.log(totalNumber)
 
         setItemInCartNumber(totalNumber);
 
-        productList.find(p => p.code == product.code).number = listItemInCart.find(e => e.code == product.code).number
 
-        setProductList(productList);
         showNoti("Added to Cart", 'success');
 
     })
@@ -182,55 +196,54 @@ function TransactionHome() {
     const removeToCart = (e, product) => {
         e.stopPropagation();
         e.preventDefault()
-        let item = listItemInCart.find(e => e.code == product.code);
+        let item = listItem.find(e => e.code == product.code);
 
         if (item && item.number <= 1) {
-            let copy = [...listItemInCart];
-            let index = listItemInCart.findIndex(e => e.code == product.code)
-            listItemInCart.splice(index, 1)
+            let copy = [...listItem];
+            let index = listItem.findIndex(e => e.code == product.code)
+            listItem.splice(index, 1)
         }
 
         if (item && item.number > 1) {
             item.number = item.number - 1;
         }
 
-        setListItemInCart(listItemInCart);
-        let number = listItemInCart.map(e => e.number).reduce((s1, s2) => s1 + s2, 0);
+        setListItem(listItem);
+        let number = listItem.map(e => e.number).reduce((s1, s2) => s1 + s2, 0);
         setItemInCartNumber(number);
 
-        productList.find(p => p.code == product.code).number = listItemInCart.find(e => e.code == product.code).number
-        setProductList(productList);
         showNoti("Remove from Cart", 'error');
     }
 
-    const navigateToCheckoutPage = (e) => {
-
-        e.preventDefault();
-        e.stopPropagation();
-        // return orchestratrionTransaction(listItemInCart)
-        //     .then(res => res.json())
-        //     .then(data => {
-        //         if (data.code === '20000000') {
-        //             showNoti(`Payment success`, 'success');
-        //             setListItemInCart([]);
-        //             productList.forEach(p => p.number = 0);
-        //             setProductList(productList);
-        //             setOpenDrawer(false);
-        //         }
-        //     })
-
-        navigate("/checkoutAlternative", {
-            state : {
-                listItem : listItemInCart
-            }, 
-        })
+    const payment = () => {
+        return orchestratrionTransaction(listItem, voucherApplyList)
+            .then(res => res.json())
+            .then(data => {
+                if (data.code === '20000000') {
+                    showNoti(`Payment success`, 'success');
+                    setListItem([]);
+                    setOpenDrawer(false);
+                }
+            })
     }
 
+    const changeVoucherCheckbox = (e, voucher) => {
+        console.log(e.target.checked);
+        if (e.target.checked) {
+            voucherApplyList.push(voucher)
+        } else {
 
+            let index = voucherApplyList.findIndex(v => v.voucherCode === voucher.voucherCode);
+            voucherApplyList.splice(index, 1)
+        }
+        setVoucherApplyList(voucherApplyList);
+        console.log(voucher)
+        console.log(voucherApplyList)
+    }
 
     return (
         <div>
-            <div style={{ backgroundColor: '#F6F9FC' }}>
+            <div style={{ backgroundColor: '#F6F9FC', height: '100%' }}>
                 <AppBar position="static" color="transparent" elevation={0} style={{ backgroundColor: '#fff', margin: 0, boxShadow: '0px 1px 3px rgba(3, 0, 71, 0.09)' }}>
                     <Container maxWidth="xl">
                         <Toolbar disableGutters>
@@ -362,8 +375,8 @@ function TransactionHome() {
                             </Box>
                             <Box sx={{ flexGrow: 0 }}>
 
-                                <Badge badgeContent={listItemInCart.map(e => e.number).reduce((s1, s2) => s1 + s2, 0)} sx={{ color: 'rgb(210, 63, 87)' }} color="error">
-                                    {/* <CartDrawer listItemInCart={listItemInCart} setListItemInCart={setListItemInCart} 
+                                <Badge badgeContent={listItem.map(e => e.number).reduce((s1, s2) => s1 + s2, 0)} sx={{ color: 'rgb(210, 63, 87)' }} color="error">
+                                    {/* <CartDrawer listItem={listItem} setlistItem={setlistItem} 
                                         addToCart={(e, item) => addToCart(e, item)} removeToCart={(e, item) => removeToCart(e,item)} 
                                     /> */}
                                     <React.Fragment >
@@ -395,7 +408,7 @@ function TransactionHome() {
                                                         <Grid container xs={9} display="flex" justifyContent="flex-start" alignItems="flex-start">
                                                             <Stack direction="row" alignItems="center" gap={1}>
                                                                 <LocalMallOutlinedIcon fontSize="medium" />
-                                                                <Typography variant="body1"> {listItemInCart.map(e => e.number).reduce((s1, s2) => s1 + s2, 0)} item</Typography>
+                                                                <Typography variant="body1"> {listItem.map(e => e.number).reduce((s1, s2) => s1 + s2, 0)} item</Typography>
                                                             </Stack>
                                                         </Grid>
                                                         <Grid xs={3} display="flex" justifyContent="flex-end" alignItems="flex-end">
@@ -403,7 +416,7 @@ function TransactionHome() {
                                                         </Grid>
                                                     </Grid>
 
-                                                    {listItemInCart && listItemInCart.length ? listItemInCart.map(item => (
+                                                    {listItem && listItem.length ? listItem.map(item => (
                                                         <Box
                                                             sx={{ width: 420, boxShadow: 0, padding: '0 1em 0 1em' }}
                                                             role="presentation"
@@ -460,7 +473,7 @@ function TransactionHome() {
                                                     <Box sx={{ marginBottom: '2em', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center' }}>
                                                         {/* <UnstyledButtonsSimple processTransaction={processTransaction}/> */}
                                                         <Stack spacing={2} direction="row" width="90%">
-                                                            <CustomButton onClick={e => navigateToCheckoutPage(e)}>Checkout Now ($ {listItemInCart.map(item => item.price * item.number).reduce((s1, s2) => s1 + s2, 0)})</CustomButton>
+                                                            {/* <CustomButton onClick={e => navigateToCheckoutPage(e)}>Checkout Now ($ {listItem.map(item => item.price * item.number).reduce((s1, s2) => s1 + s2, 0)})</CustomButton> */}
                                                         </Stack>
                                                     </Box>
                                                 </Box>
@@ -508,96 +521,227 @@ function TransactionHome() {
                         </Grid>
                     </Container>
                 </AppBar>
-                <Container maxWidth="xl" >
-                    <Grid container xs={12} display="flex" justifyContent="center" alignItems="center" >
-                        <Grid style={{ backgroundColor: '#fff', marginTop: '2em', margonBottom: '2em', borderRadius: '10px' }}
-                            container xs={11} display="flex" justifyContent="center" alignItems="center" sx={{ boxShadow: '0px 1px 3px rgba(3, 0, 71, 0.09)' }}>
-                            <Grid >
-                                <BootstrapButton >
-                                    <HomeDropDown />
-                                </BootstrapButton>
-                            </Grid>
-                            <Grid >
-                                <BootstrapButton >
-                                    <HomeDropDown />
-                                </BootstrapButton>
-                            </Grid>
-                            <Grid  >
-                                <BootstrapButton >
-                                    <HomeDropDown />
-                                </BootstrapButton>
-                            </Grid>
-                        </Grid>
 
-                        <Grid style={{ marginTop: '2em', }} columnSpacing={2} container xs={11} display="flex" justifyContent="center" alignItems="flex-start" rowSpacing={2}>
-                            <Grid xs={3} > <LeftMenu /></Grid>
-                            <Grid container display="flex" justifyContent="flex-start" alignItems="flex-start" xs={9}>
-                                {productList.length ? productList.map(item => (
-                                    <Grid xs={4} >
-                                        {/* <Product product={product} addToCart={(e) => addToCart(e, product)} removeToCart={(e) => removeToCart(e, product)} /> */}
-                                        <Card sx={{ maxWidth: 330, marginBottom: '2em', backgroundColor: '#fff', boxShadow: '0px 1px 3px rgba(3, 0, 71, 0.09)', borderRadius: 3 }}>
-                                            <CardHeader
-                                                subheader="September 14, 2016"
-                                            />
-                                            <CardMedia
-                                                component="img"
-                                                height="230"
-                                                image="https://bazaar.ui-lib.com/_next/image?url=%2Fassets%2Fimages%2Fproducts%2FFashion%2FAccessories%2F7.PoliceGrayEyeglasses.png&w=640&q=75"
-                                                alt="Paella dish"
-                                            />
-                                            <CardContent>
-                                                <Typography variant="body1" color="">
-                                                    {item.name}
-                                                </Typography>
-                                                <HoverRating />
+                <Container maxWidth="xl" height="100%" sx={{ marginTop: '4em' }} display="flex" flexDirection='row' justifyContent="space-between" >
+                    <Grid container xs={12} display="flex" justifyContent="center" >
+                        <Grid container xs={11} display="flex" flexDirection='row' justifyContent="space-between" >
+                            <Grid container xs={7} display="flex" justifyContent="center" alignItems="center" >
+                                <Box borderRadius={2} justifyContent="flex-start" alignItems="center" sx={{ marginBottom: '2em', backgroundColor: '#fff', width: '100%', boxShadow: '0px 1px 3px rgba(3, 0, 71, 0.09)', padding: '0 2em 0 2em' }} >
 
-                                            </CardContent>
-                                            <CardActions disableSpacing>
-                                                <Grid container xs={12} justifyContent="space-between"
-                                                    flexDirection={{ xs: 'column', sm: 'row' }}>
-                                                    <Grid xs={3} display="flex" justifyContent="center" alignItems="center">
-                                                        <Typography variant="body1" color="rgb(210, 63, 87)">
-                                                            ${item.price}
-                                                        </Typography>
-                                                    </Grid>
-                                                    <Grid xs={9} display="flex" justifyContent="flex-end" alignItems="center">
+                                    <Grid container xs={12} display="flex" paddingTop={3}>
+                                        <Grid xs={1} display="flex" justifyContent="flex-end">
+                                            <Avatar sx={{ bgcolor: 'rgb(210, 63, 87)' }}>1</Avatar>
+                                        </Grid>
+                                        <Grid xs={10} alignItems="flex-start">
+                                            <Typography sx={{ ml: 2 }} variant="h6">Delivery Date and Time</Typography>
+                                            <Stack direction="row" margin="1em" display="flex" alignItems="center">
+                                                <Typography variant="body1"> Voucher</Typography>
+                                            </Stack>
+                                        </Grid>
+                                    </Grid>
 
-                                                        {item.number && item.number > 0 ? (
-                                                            <>
-                                                                <IconButton onClick={(e) => removeToCart(e, item)}>
-                                                                    <IndeterminateCheckBoxOutlinedIcon style={{ color: 'rgb(210, 63, 87)' }} />
-                                                                </IconButton>
+                                </Box>
 
-                                                                <Typography variant="body1" >
-                                                                    {item.number}
-                                                                </Typography>
-                                                            </>
-                                                        ) : ""}
-
-                                                        <IconButton onClick={(e) => addToCart(e, item)}>
-                                                            <AddBoxOutlinedIcon style={{ color: 'rgb(210, 63, 87)' }} />
-                                                        </IconButton>
+                                <Box borderRadius={2} display="flex" justifyContent="flex-start" alignItems="center" sx={{ marginBottom: '2em', backgroundColor: '#fff', width: '100%', boxShadow: '0px 1px 3px rgba(3, 0, 71, 0.09)', padding: '0 2em 0 2em' }} >
+                                    <Grid container xs={12} display="flex" paddingTop={3}>
+                                        <Grid xs={1} display="flex" justifyContent="flex-end">
+                                            <Avatar sx={{ bgcolor: 'rgb(210, 63, 87)' }}>2</Avatar>
+                                        </Grid>
+                                        <Grid xs={10} alignItems="flex-start">
+                                            <Typography sx={{ ml: 2 }} variant="h6">Delivery Address</Typography>
+                                            <Stack direction="row" margin="1em" display="flex" alignItems="center">
+                                                <Typography variant="body1"> Voucher</Typography>
+                                            </Stack>
+                                            <Grid sx={{ ml: 2 }} container xs={12} display="flex" justifyContent="flex-start" >
+                                                {!voucherList.length ? "" : voucherList.map(voucher => (
+                                                    <Grid xs="3">
+                                                        <Typography>{voucher.voucherName}</Typography>
                                                     </Grid>
 
-                                                </Grid>
-                                            </CardActions>
+                                                ))}
+                                            </Grid>
 
-                                        </Card>
-                                    </Grid>)
-                                ) : ""}
+                                            <Divider />
+                                            <Grid sx={{ ml: 2 }} container xs={12} display="flex" justifyContent="flex-start" >
+                                                {!voucherList.length ? "" : voucherList.map(voucher => (
+                                                    <Grid xs="3">
+                                                        <Typography>{voucher.voucherName}</Typography>
+                                                    </Grid>
+
+                                                ))}
+                                            </Grid>
+
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+
+                                <Box borderRadius={2} justifyContent="flex-start" alignItems="center" sx={{ marginBottom: '2em', backgroundColor: '#fff', width: '100%', boxShadow: '0px 1px 3px rgba(3, 0, 71, 0.09)', padding: '0 2em 0 2em' }} >
+
+                                    <Grid container xs={12} display="flex" paddingTop={3}>
+                                        <Grid xs={1} display="flex" justifyContent="flex-end">
+                                            <Avatar sx={{ bgcolor: 'rgb(210, 63, 87)' }}>3</Avatar>
+                                        </Grid>
+                                        <Grid xs={10} alignItems="flex-start" >
+                                            <Typography sx={{ ml: 2 }} variant="h6">Discount</Typography>
+                                            <Stack direction="row" margin="1em" display="flex" alignItems="flex-start">
+                                                <VoucherButton variant="text" onClick={handleClickOpenVoucherDialog} > Click to apply voucher</VoucherButton>
+                                                <Dialog fullWidth="md" onClose={handleCloseVoucherDialog} open={openVoucherDialog}>
+                                                    <DialogTitle sx={{ color: 'rgb(210, 63, 87)' }}>Choose voucher</DialogTitle>
+                                                    <Divider />
+                                                    <List sx={{ pt: 0 }}>
+                                                        {!voucherList.length ? "" : (voucherList.map((voucher) => (
+                                                            <div>
+                                                                <ListItem >
+
+                                                                    <Stack spacing={2} width="90%">
+                                                                        <Typography variant="body1">{voucher.voucherName}</Typography>
+                                                                        <Typography variant="body2">
+                                                                            {voucher.description}
+                                                                        </Typography>
+                                                                    </Stack>
+                                                                    <Stack>
+                                                                        <Stack width="10%" display="flex" alignItems="center" justifyContent="flex-end" justifyItems="flex-end">
+                                                                            <Checkbox
+                                                                                // checked={() => {
+                                                                                //     let checked = voucherApplyList.some(v => v.voucherCode === voucher.voucherCode);
+                                                                                //     console.log(checked)
+                                                                                //     return checked;
+                                                                                // }}
+                                                                                onChange={(e) => changeVoucherCheckbox(e, voucher)} sx={{
+                                                                                    color: 'rgb(210, 63, 87)', '&.Mui-checked': { color: 'rgb(210, 63, 87)' }
+                                                                                }}></Checkbox>
+                                                                        </Stack>
+                                                                    </Stack>
+
+                                                                </ListItem>
+                                                                <Divider />
+                                                            </div>
+                                                        )))}
+
+                                                    </List>
+                                                </Dialog>
+                                            </Stack>
+                                            <Grid sx={{ ml: 2 }} container xs={12} display="flex" justifyContent="flex-start" >
+                                                {!voucherList.length ? "" : voucherList.map(voucher => (
+                                                    <Grid xs="3">
+                                                        <Typography>{voucher.voucherName}</Typography>
+                                                    </Grid>
+
+                                                ))}
+                                            </Grid>
+                                            <Divider />
+                                            <Grid sx={{ ml: 1 }} columnSpacing={2} container xs={12} display="flex" justifyContent="flex-start" justifyItems="flex-start" >
+                                                {!voucherList.length ? "" : voucherList.map(voucher => (
+                                                    <Grid xs="3">
+                                                        <Box sx={{ p: 1 }}>{voucher.voucherName} </Box>
+                                                    </Grid>
+
+                                                ))}
+                                            </Grid>
+                                        </Grid>
+                                    </Grid>
+
+
+
+                                </Box>
+
+                                <Box borderRadius={2} display="flex" justifyContent="flex-start" alignItems="center" sx={{ marginBottom: '2em', backgroundColor: '#fff', width: '100%', boxShadow: '0px 1px 3px rgba(3, 0, 71, 0.09)', padding: '0 2em 0 2em' }} >
+                                    <Grid container xs={12} paddingTop={3} direction="row">
+                                        <Grid xs={1} display="flex" justifyContent="flex-end">
+                                            <Avatar sx={{ bgcolor: 'rgb(210, 63, 87)' }}>4</Avatar>
+                                        </Grid>
+                                        <Grid xs={10} alignItems="flex-start">
+                                            <Typography sx={{ ml: 2 }} variant="h6"> Payment Details</Typography>
+                                            <Stack direction="row" margin="1em" display="flex" alignItems="center">
+                                                <Typography variant="body1"> Voucher</Typography>
+                                            </Stack>
+                                        </Grid>
+                                        <Grid xs={12} display="flex" direction="row" alignItems="center" w>
+                                            <CustomButton onClick={payment}>Checkout Now </CustomButton>
+                                        </Grid>
+                                    </Grid>
+
+
+                                </Box>
+
 
                             </Grid>
+                            <Grid container xs={5} display="flex" justifyContent="center">
+                                <Box role="presentation" borderRadius={3} sx={{ width: '100%', padding: '0 2em 0 2em' }} >
+                                    <Stack direction="row" width="100%"><Typography variant="h6">Your order</Typography></Stack>
+                                    <Divider />
+                                    {listItem.map(item => (
+                                        <Grid container xs={12} direction="row" sx={{ marginTop: '1em' }}>
+                                            <Grid xs={7}>
+                                                <Typography variant="subtitle2"> {item.number} x {item.name}</Typography>
+                                            </Grid>
+                                            <Grid xs={5} display="flex" alignItems="flex-end" justifyContent="flex-end" flexDirection="row">
+                                                <Typography variant="subtitle2" justifyItems="flex-end">${item.number * item.price}</Typography>
+                                            </Grid>
+                                        </Grid>
+                                    ))}
+                                    <Divider />
 
+                                    <Grid container xs={12} direction="row" sx={{ marginTop: '1em' }}>
+                                        <Grid xs={6}>
+                                            <Typography variant="subtitle2"> Subtotal: </Typography>
+                                        </Grid>
+                                        <Grid xs={6} display="flex" alignItems="flex-end" justifyContent="flex-end" flexDirection="row">
+                                            <Typography variant="subtitle2" justifyItems="flex-end">${listItem.map(item => item.number * item.price).reduce((s1, s2) => s1 + s2, 0)}</Typography>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container xs={12} direction="row" sx={{ marginTop: '1em' }}>
+                                        <Grid xs={6}>
+                                            <Typography variant="subtitle2"> Shipping: </Typography>
+                                        </Grid>
+                                        <Grid xs={6} display="flex" alignItems="flex-end" justifyContent="flex-end" flexDirection="row">
+                                            <Typography variant="subtitle2" justifyItems="flex-end">-</Typography>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container xs={12} direction="row" sx={{ marginTop: '1em' }}>
+                                        <Grid xs={6}>
+                                            <Typography variant="subtitle2"> Tax: </Typography>
+                                        </Grid>
+                                        <Grid xs={6} display="flex" alignItems="flex-end" justifyContent="flex-end" flexDirection="row">
+                                            <Typography variant="subtitle2" justifyItems="flex-end">-</Typography>
+                                        </Grid>
+                                    </Grid>
+                                    <Grid container xs={12} direction="row" sx={{ marginTop: '1em' }}>
+                                        <Grid xs={6}>
+                                            <Typography variant="subtitle2"> Discount: </Typography>
+                                        </Grid>
+                                        <Grid xs={6} display="flex" alignItems="flex-end" justifyContent="flex-end" flexDirection="row">
+                                            <Typography variant="subtitle2" justifyItems="flex-end">-</Typography>
+                                        </Grid>
+                                    </Grid>
+
+                                    <Divider />
+                                    <Grid container xs={12} direction="row" sx={{ marginTop: '1em' }}>
+                                        <Grid xs={6}>
+                                            <Typography variant="subtitle2"> Total: </Typography>
+                                        </Grid>
+                                        <Grid xs={6} display="flex" alignItems="flex-end" justifyContent="flex-end" flexDirection="row">
+                                            <Typography variant="subtitle2" justifyItems="flex-end">${listItem.map(item => item.number * item.price).reduce((s1, s2) => s1 + s2, 0)}</Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Box>
+                            </Grid>
                         </Grid>
-
                     </Grid>
                 </Container>
-
             </div>
         </div>
-    );
+    )
 }
 
+
+const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+}));
 
 const UnstyledButtonsSimple = (props) => {
     return (
@@ -645,4 +789,14 @@ const CustomButton = styled(ButtonUnstyled)`
   }
 `;
 
-export default TransactionHome;
+const VoucherButton = styled(ButtonUnstyled)`
+  text-align: start;
+  font-size: 0.875rem;
+  border-radius: 12px;
+  color: rgb(210, 63, 87);
+  transition: all 150ms ease;
+  cursor: pointer;
+  border: none;
+  width: 100%;
+  background: none;
+`;

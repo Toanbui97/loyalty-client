@@ -14,6 +14,7 @@ import VoucherHome from './view/VoucherHome.js';
 import TransactionHome from './view/TransactionHome.js';
 import { applyMiddleware, createStore } from 'redux';
 import createSagaMiddleware from 'redux-saga';
+import CheckoutHome from './view/CheckoutHome.js';
 
 
 const App = () => {
@@ -26,6 +27,7 @@ const App = () => {
             <Route path="/customerHome" element={<CustomerHome />} />
             <Route path="/rankHome" element={<RankHome />} />
             <Route path="/voucherHome" element={<VoucherHome /> } />
+            <Route path="/checkoutAlternative" element={<CheckoutHome /> } />
           </Routes>
         </Router>
     )

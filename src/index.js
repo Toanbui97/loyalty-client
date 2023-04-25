@@ -5,13 +5,25 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { AlertProvider } from './context/AlertContext';
 import { SnackbarProvider } from 'notistack';
+import { createTheme, ThemeProvider } from '@mui/material';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
+
+const theme = createTheme({
+    typography: {
+        allVariants: {
+            fontFamily: 'Open Sans sans-serif',
+            textTransform: 'none',
+        },
+    },
+})
 root.render(
     <AlertProvider>
+        {/* <ThemeProvider theme={theme}> */}
         <SnackbarProvider maxSnack={3}>
-    <App />
-    </SnackbarProvider>
+            <App />
+        </SnackbarProvider>
+        {/* </ThemeProvider> */}
     </AlertProvider>
 );
 

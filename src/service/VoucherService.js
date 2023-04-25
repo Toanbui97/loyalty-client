@@ -9,6 +9,7 @@ const updateVoucherInfoEndpoint = process.env.REACT_APP_VOUCHER_UPDATE_VOUCHER_I
 const receiveVoucherInfoEndpoint = process.env.REACT_APP_VOUCHER_RECEIVE_VOUCHER_INFO;
 const createVoucherInfoEndPoint = process.env.REACT_APP_VOUCHER_CREATE_VOUCHER_INFO
 const deleteVoucherEndpoint = process.env.REACT_APP_VOUCHER_DELETE_VOUCHER_URL;
+const customerVoucherEndpoint = process.env.REACT_APP_VOUCHER_RECEIVE_CUSTOMER_LIST;
 
 const requestBody = {
     "requestId" : uuid.v4()
@@ -59,6 +60,17 @@ export const getVoucherInfo = async (voucherCode) => {
 
 export const deleteVoucher = async (voucherCode) => {
     return await fetch(getVoucherUrl(deleteVoucherEndpoint, {voucherCode: voucherCode}, null) , {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json"
+        }, 
+        body: JSON.stringify(requestBody)
+    });
+}
+
+export const getCustomerVoucher = async (customerCode) => {
+    customerCode = customerCode ? customerCode : "";
+    return await fetch(getVoucherUrl(customerVoucherEndpoint, {customerCode}, null), {
         method: "POST",
         headers: {
             "Content-Type" : "application/json"
