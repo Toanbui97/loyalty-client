@@ -44,6 +44,7 @@ import IndeterminateCheckBoxOutlinedIcon from '@mui/icons-material/Indeterminate
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import { orchestratrionTransaction } from '../service/TransactionService';
 import { useNavigate } from "react-router-dom";
+import SigninDialog from '../component/common/Signin';
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
@@ -332,7 +333,8 @@ function TransactionHome() {
                                 </Search>
                             </Box>
                             <Box sx={{ flexGrow: 0.1 }}>
-                                <Tooltip title="Open settings">
+                                <SigninDialog />
+                                {/* <Tooltip title="Open settings">
                                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                                         <Avatar alt="Remy Sharp" src="https://mui.com/static/images/avatar/3.jpg" />
                                     </IconButton>
@@ -358,7 +360,9 @@ function TransactionHome() {
                                             <Typography textAlign="center">{setting}</Typography>
                                         </MenuItem>
                                     ))}
-                                </Menu>
+                                </Menu> */}
+
+
                             </Box>
                             <Box sx={{ flexGrow: 0 }}>
 

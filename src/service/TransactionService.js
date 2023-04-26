@@ -14,9 +14,10 @@ export const orchestratrionTransaction = async (listItem, voucherList) => {
     let discountPercent = applyList.map(v => v.discountPercent).reduce((s1, s2) => s1+s2, 0);
     let voucherDetailList = applyList.map(v => v.detailEntities[0].voucherCode);
     let transactionValue = (listItem.map(item => item.price * item.number).reduce((s1, s2) => s1 + s2, 0) * discountPercent / 100).toFixed(2);
+    let customerCode = localStorage.getItem("customer")?.customerCode;
     let body = {
         transactionId :uuid.v4(),
-        customerCode: 'ff4c829c-c528-4c96-8983-6305f417f76e',
+        customerCode: customerCode,
         transactionType: 'PAYMENT_TYPE',
         transactionTime: new Date(), 
         data: {

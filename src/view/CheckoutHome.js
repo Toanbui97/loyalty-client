@@ -54,6 +54,7 @@ import { change } from 'redux-form';
 import SelectIntroduction, { DeliveryDateDropDown, DeliveryTimeDropDown } from '../component/checkout/DropDown';
 import SelectForm from '../component/checkout/DropDown';
 import { DeliveryAddressInput } from '../component/checkout/Input';
+import SigninDialog from '../component/common/Signin';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -131,7 +132,7 @@ export default function CheckoutHome() {
     };
 
     React.useEffect(() => {
-        getCustomerVoucher('c448768f-a5d7-40ba-8248-fe9007c4313f')
+        getCustomerVoucher()
             .then(res => res.json())
             .then(data => {
                 console.log(data)
@@ -345,7 +346,7 @@ export default function CheckoutHome() {
                                 </Search>
                             </Box>
                             <Box sx={{ flexGrow: 0.1 }}>
-                                <Tooltip title="Open settings">
+                                {/* <Tooltip title="Open settings">
                                     <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                                         <Avatar alt="Remy Sharp" src="https://mui.com/static/images/avatar/3.jpg" />
                                     </IconButton>
@@ -371,7 +372,8 @@ export default function CheckoutHome() {
                                             <Typography textAlign="center">{setting}</Typography>
                                         </MenuItem>
                                     ))}
-                                </Menu>
+                                </Menu> */}
+                                <SigninDialog />
                             </Box>
                             <Box sx={{ flexGrow: 0 }}>
 

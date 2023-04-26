@@ -14,10 +14,21 @@ const createRankUrl = process.env.REACT_APP_CMS_CREATE_RANK_URL;
 const createCustomerUrl = process.env.REACT_APP_CMS_CREATE_CUSTOMER_URL;
 const deleteCustomerUrl = process.env.REACT_APP_CMS_DELETE_CUSTOMER_URL;
 const deleteRankUrl = process.env.REACT_APP_CMS_DELETE_RANK_URL;
+const signInUrl = process.env.REACT_APP_CMS_SIGN_IN_URL;
 // const setAlert = useAlert();
 
 const requestBody = {
     "requestId" : uuid.v4()
+}
+
+export const signIn = async (customerName) => {
+    return await fetch(getCMSUrl(signInUrl, {customerName}, null), {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json"
+        }, 
+        body: JSON.stringify(requestBody)
+    });
 }
 
 export const getCustomerList = async (page, size) => {
