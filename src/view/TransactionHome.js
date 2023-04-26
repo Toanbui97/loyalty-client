@@ -24,7 +24,7 @@ import Product from '../component/transaction/Product';
 import { display, Stack } from '@mui/system';
 import LeftMenu from '../component/transaction/LeftMenu'
 import CartDrawer from '../component/transaction/CartDrawer';
-import { ButtonUnstyled, buttonUnstyledClasses } from '@mui/base';
+import {  buttonClasses } from '@mui/base';
 import { useSnackbar } from 'notistack';
 import LocalMallOutlinedIcon from '@mui/icons-material/LocalMallOutlined';
 import { ClickAwayListener } from '@mui/base';
@@ -458,7 +458,7 @@ function TransactionHome() {
                                                     )) : ""}
                                                     <Divider />
                                                     <Box sx={{ marginBottom: '2em', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center' }}>
-                                                        {/* <UnstyledButtonsSimple processTransaction={processTransaction}/> */}
+                                                        {/* <ButtonsSimple processTransaction={processTransaction}/> */}
                                                         <Stack spacing={2} direction="row" width="90%">
                                                             <CustomButton onClick={e => navigateToCheckoutPage(e)}>Checkout Now ($ {listItemInCart.map(item => item.price * item.number).reduce((s1, s2) => s1 + s2, 0)})</CustomButton>
                                                         </Stack>
@@ -599,7 +599,7 @@ function TransactionHome() {
 }
 
 
-const UnstyledButtonsSimple = (props) => {
+const ButtonsSimple = (props) => {
     return (
         <Stack spacing={2} direction="row" width="90%">
             <CustomButton onClick={props.processTransaction}>Payment</CustomButton>
@@ -613,7 +613,7 @@ const blue = {
     700: '#0059B2',
 };
 
-const CustomButton = styled(ButtonUnstyled)`
+const CustomButton = styled(Button)`
   font-family: IBM Plex Sans, sans-serif;
   font-weight: bold;
   font-size: 0.875rem;
@@ -630,16 +630,16 @@ const CustomButton = styled(ButtonUnstyled)`
     background-color:rgb(210, 63, 87);
   }
 
-  &.${buttonUnstyledClasses.active} {
+  &.${buttonClasses.active} {
     background-color: rgb(210, 63, 87);
   }
 
-  &.${buttonUnstyledClasses.focusVisible} {
+  &.${buttonClasses.focusVisible} {
     box-shadow: 0 4px 20px 0 rgba(61, 71, 82, 0.1), 0 0 0 5px rgba(0, 127, 255, 0.5);
     outline: none;
   }
 
-  &.${buttonUnstyledClasses.disabled} {
+  &.${buttonClasses.disabled} {
     opacity: 0.5;
     cursor: not-allowed;
   }

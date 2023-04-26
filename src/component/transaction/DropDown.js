@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import clsx from 'clsx';
 import useMenu, { MenuProvider } from '@mui/base/useMenu';
 import useMenuItem from '@mui/base/useMenuItem';
-import PopperUnstyled from '@mui/base/PopperUnstyled';
+import Popper from '@mui/base/Popper';
 import { GlobalStyles, Stack } from '@mui/system';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { Typography } from '@mui/material';
@@ -120,7 +120,7 @@ export function HomeDropDown() {
                     <KeyboardArrowDownIcon />
                 </Stack>
             </button>
-            <PopperUnstyled open={isOpen} anchorEl={buttonElement}>
+            <Popper open={isOpen} anchorEl={buttonElement}>
                 <Menu
                     onOpenChange={(open) => {
                         setOpen(open);
@@ -140,7 +140,7 @@ export function HomeDropDown() {
                     <MenuItem onClick={createHandleMenuClick('Paste')}>Fashion 3</MenuItem>
                     <MenuItem onClick={createHandleMenuClick('Paste')}>Fashion 2</MenuItem>
                 </Menu>
-            </PopperUnstyled>
+            </Popper>
         </React.Fragment>
     );
 }
@@ -208,7 +208,7 @@ export function PageDropDown() {
                   <KeyboardArrowDownIcon />
               </Stack>
           </button>
-          <PopperUnstyled open={isOpen} anchorEl={buttonElement}>
+          <Popper open={isOpen} anchorEl={buttonElement}>
               <Menu
                   onOpenChange={(open) => {
                       setOpen(open);
@@ -220,7 +220,7 @@ export function PageDropDown() {
                   <MenuItem onClick={createHandleMenuClick('Copy')}>Vendor</MenuItem>
                   <MenuItem onClick={createHandleMenuClick('Paste')}>Shop</MenuItem>
               </Menu>
-          </PopperUnstyled>
+          </Popper>
       </React.Fragment>
   );
 }
@@ -288,7 +288,7 @@ export function UserAccountDropDown() {
                   <KeyboardArrowDownIcon />
               </Stack>
           </button>
-          <PopperUnstyled open={isOpen} anchorEl={buttonElement}>
+          <Popper open={isOpen} anchorEl={buttonElement}>
               <Menu
                   onOpenChange={(open) => {
                       setOpen(open);
@@ -302,10 +302,13 @@ export function UserAccountDropDown() {
                   <MenuItem onClick={createHandleMenuClick('Paste')}>Support tickets</MenuItem>
                   <MenuItem onClick={createHandleMenuClick('Paste')}>Wish</MenuItem>
               </Menu>
-          </PopperUnstyled>
+          </Popper>
       </React.Fragment>
   );
 }
+
+
+
 
 const grey = {
     50: '#f6f8fa',

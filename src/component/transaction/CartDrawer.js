@@ -9,7 +9,7 @@ import { ClickAwayListener } from '@mui/base';
 import CloseIcon from '@mui/icons-material/Close';
 import LocalMallOutlinedIcon from '@mui/icons-material/LocalMallOutlined';
 import { Stack } from '@mui/system';
-import ButtonUnstyled, { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled';
+import Button, { buttonClasses } from '@mui/base/Button';
 import { styled } from '@mui/system';
 import { useSnackbar } from 'notistack';
 import Card from '@mui/material/Card';
@@ -138,7 +138,7 @@ export default function CartDrawer(props) {
                                     </List>
                                 </Box>
                             )) : ""}
-                            <Box sx={{ marginBottom: '2em', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center' }}><UnstyledButtonsSimple /></Box>
+                            <Box sx={{ marginBottom: '2em', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center' }}><ButtonsSimple /></Box>
                         </Box>
                     </SwipeableDrawer>
                 </ClickAwayListener>
@@ -147,7 +147,7 @@ export default function CartDrawer(props) {
     );
 }
 
-const UnstyledButtonsSimple = () => {
+const ButtonsSimple = () => {
     return (
         <Stack spacing={2} direction="row" width="90%">
             <CustomButton>Payment</CustomButton>
@@ -161,7 +161,7 @@ const blue = {
     700: '#0059B2',
 };
 
-const CustomButton = styled(ButtonUnstyled)`
+const CustomButton = styled(Button)`
   font-family: IBM Plex Sans, sans-serif;
   font-weight: bold;
   font-size: 0.875rem;
@@ -178,16 +178,16 @@ const CustomButton = styled(ButtonUnstyled)`
     background-color:rgb(210, 63, 87);
   }
 
-  &.${buttonUnstyledClasses.active} {
+  &.${buttonClasses.active} {
     background-color: rgb(210, 63, 87);
   }
 
-  &.${buttonUnstyledClasses.focusVisible} {
+  &.${buttonClasses.focusVisible} {
     box-shadow: 0 4px 20px 0 rgba(61, 71, 82, 0.1), 0 0 0 5px rgba(0, 127, 255, 0.5);
     outline: none;
   }
 
-  &.${buttonUnstyledClasses.disabled} {
+  &.${buttonClasses.disabled} {
     opacity: 0.5;
     cursor: not-allowed;
   }

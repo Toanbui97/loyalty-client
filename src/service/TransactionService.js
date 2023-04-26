@@ -8,14 +8,20 @@ const requestBody = {
     "requestId" : uuid.v4()
 }
 
-export const orchestratrionTransaction = async (listItem) => {
+export const orchestratrionTransaction = async (listItem, voucherList) => {
+
+    let applyList = voucherList.filter(v => v.checked);
+    let discountPercent = applyList.map(v => v.discountPercent).reduce((s1, s2) => s1+s2, 0);
+    let voucherDetailList = applyList.map(v => v.detailEntities[0].voucherCode);
+    let transactionValue = (listItem.map(item => item.price * item.number).reduce((s1, s2) => s1 + s2, 0) * discountPercent / 100).toFixed(2);
     let body = {
         transactionId :uuid.v4(),
-        customerCode: 'c448768f-a5d7-40ba-8248-fe9007c4313f',
+        customerCode: 'ff4c829c-c528-4c96-8983-6305f417f76e',
         transactionType: 'PAYMENT_TYPE',
         transactionTime: new Date(), 
         data: {
-            transactionValue: listItem.map(item => item.price * item.number).reduce((s1, s2) => s1 + s2, 0)
+            transactionValue: transactionValue,
+            voucherDetailCodeList: voucherDetailList
         }
     };
     // body.transactionId = uuid.v4();
@@ -24,6 +30,8 @@ export const orchestratrionTransaction = async (listItem) => {
     // body.transactionTime = new Date();
     // body.data.transactionValue = listItem.map(item => item.price).reduce((s1, s2) => s1 + s2, 0);
     requestBody.data = body;
+    console.log(JSON.stringify(requestBody))
+
     return await fetch(getTransactionUrl(orchestrationTransactionUrl, null, null), {
         method: "POST",
         headers: {

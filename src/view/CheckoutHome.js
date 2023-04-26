@@ -24,7 +24,7 @@ import Product from '../component/transaction/Product';
 import { display, Stack } from '@mui/system';
 import LeftMenu from '../component/transaction/LeftMenu'
 import CartDrawer from '../component/transaction/CartDrawer';
-import { ButtonUnstyled, buttonUnstyledClasses } from '@mui/base';
+import { Button as Button1, buttonClasses } from '@mui/base';
 import { useSnackbar } from 'notistack';
 import LocalMallOutlinedIcon from '@mui/icons-material/LocalMallOutlined';
 import { ClickAwayListener } from '@mui/base';
@@ -42,7 +42,7 @@ import HoverRating from '../component/transaction/HoverRating';
 import CardActions from '@mui/material/CardActions';
 import IndeterminateCheckBoxOutlinedIcon from '@mui/icons-material/IndeterminateCheckBoxOutlined';
 import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
-import { useLocation } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { orchestratrionTransaction } from '../service/TransactionService';
@@ -51,6 +51,9 @@ import VoucherDialog from '../component/transaction/VoucherDialog';
 import PersonIcon from '@mui/icons-material/Person';
 import AddIcon from '@mui/icons-material/Add';
 import { change } from 'redux-form';
+import SelectIntroduction, { DeliveryDateDropDown, DeliveryTimeDropDown } from '../component/checkout/DropDown';
+import SelectForm from '../component/checkout/DropDown';
+import { DeliveryAddressInput } from '../component/checkout/Input';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -112,6 +115,7 @@ export default function CheckoutHome() {
     const [voucherList, setVoucherList] = React.useState([]);
     const [voucherApplyList, setVoucherApplyList] = React.useState([]);
     const [openVoucherDialog, setOpenVoucherDialog] = React.useState(false);
+    const navigate = useNavigate();
 
 
     const handleClickOpenVoucherDialog = () => {
@@ -216,29 +220,25 @@ export default function CheckoutHome() {
     }
 
     const payment = () => {
-        return orchestratrionTransaction(listItem, voucherApplyList)
+        return orchestratrionTransaction(listItem, voucherList)
             .then(res => res.json())
             .then(data => {
                 if (data.code === '20000000') {
                     showNoti(`Payment success`, 'success');
                     setListItem([]);
                     setOpenDrawer(false);
+                    navigate("/")
                 }
             })
     }
 
     const changeVoucherCheckbox = (e, voucher) => {
-        console.log(e.target.checked);
         if (e.target.checked) {
-            voucherApplyList.push(voucher)
+            voucherList.find(v => v.voucherCode == voucher.voucherCode).checked = true;
         } else {
-
-            let index = voucherApplyList.findIndex(v => v.voucherCode === voucher.voucherCode);
-            voucherApplyList.splice(index, 1)
+            voucherList.find(v => v.voucherCode == voucher.voucherCode).checked = false;
         }
-        setVoucherApplyList(voucherApplyList);
-        console.log(voucher)
-        console.log(voucherApplyList)
+        setVoucherList(voucherList)
     }
 
     return (
@@ -471,7 +471,7 @@ export default function CheckoutHome() {
                                                     )) : ""}
                                                     <Divider />
                                                     <Box sx={{ marginBottom: '2em', height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'center' }}>
-                                                        {/* <UnstyledButtonsSimple processTransaction={processTransaction}/> */}
+                                                        {/* <ButtonsSimple processTransaction={processTransaction}/> */}
                                                         <Stack spacing={2} direction="row" width="90%">
                                                             {/* <CustomButton onClick={e => navigateToCheckoutPage(e)}>Checkout Now ($ {listItem.map(item => item.price * item.number).reduce((s1, s2) => s1 + s2, 0)})</CustomButton> */}
                                                         </Stack>
@@ -534,8 +534,11 @@ export default function CheckoutHome() {
                                         </Grid>
                                         <Grid xs={10} alignItems="flex-start">
                                             <Typography sx={{ ml: 2 }} variant="h6">Delivery Date and Time</Typography>
-                                            <Stack direction="row" margin="1em" display="flex" alignItems="center">
-                                                <Typography variant="body1"> Voucher</Typography>
+                                            <Stack direction="row" margin="1em" alignItems="center" gap={2}>
+
+                                                <DeliveryDateDropDown />
+
+                                                <DeliveryTimeDropDown />
                                             </Stack>
                                         </Grid>
                                     </Grid>
@@ -550,25 +553,10 @@ export default function CheckoutHome() {
                                         <Grid xs={10} alignItems="flex-start">
                                             <Typography sx={{ ml: 2 }} variant="h6">Delivery Address</Typography>
                                             <Stack direction="row" margin="1em" display="flex" alignItems="center">
-                                                <Typography variant="body1"> Voucher</Typography>
+                                            <DeliveryAddressInput sx={{width: '100%'}}/>
                                             </Stack>
                                             <Grid sx={{ ml: 2 }} container xs={12} display="flex" justifyContent="flex-start" >
-                                                {!voucherList.length ? "" : voucherList.map(voucher => (
-                                                    <Grid xs="3">
-                                                        <Typography>{voucher.voucherName}</Typography>
-                                                    </Grid>
-
-                                                ))}
-                                            </Grid>
-
-                                            <Divider />
-                                            <Grid sx={{ ml: 2 }} container xs={12} display="flex" justifyContent="flex-start" >
-                                                {!voucherList.length ? "" : voucherList.map(voucher => (
-                                                    <Grid xs="3">
-                                                        <Typography>{voucher.voucherName}</Typography>
-                                                    </Grid>
-
-                                                ))}
+                                               
                                             </Grid>
 
                                         </Grid>
@@ -602,17 +590,14 @@ export default function CheckoutHome() {
                                                                     <Stack>
                                                                         <Stack width="10%" display="flex" alignItems="center" justifyContent="flex-end" justifyItems="flex-end">
                                                                             <Checkbox
-                                                                                // checked={() => {
-                                                                                //     let checked = voucherApplyList.some(v => v.voucherCode === voucher.voucherCode);
-                                                                                //     console.log(checked)
-                                                                                //     return checked;
-                                                                                // }}
-                                                                                onChange={(e) => changeVoucherCheckbox(e, voucher)} sx={{
+                                                                                checked={voucher.checked}
+                                                                                // onClick={(e) => changeVoucherCheckbox(e, voucher)}
+                                                                                onChange={(e) => changeVoucherCheckbox(e, voucher)}
+                                                                                sx={{
                                                                                     color: 'rgb(210, 63, 87)', '&.Mui-checked': { color: 'rgb(210, 63, 87)' }
                                                                                 }}></Checkbox>
                                                                         </Stack>
                                                                     </Stack>
-
                                                                 </ListItem>
                                                                 <Divider />
                                                             </div>
@@ -621,21 +606,14 @@ export default function CheckoutHome() {
                                                     </List>
                                                 </Dialog>
                                             </Stack>
-                                            <Grid sx={{ ml: 2 }} container xs={12} display="flex" justifyContent="flex-start" >
-                                                {!voucherList.length ? "" : voucherList.map(voucher => (
-                                                    <Grid xs="3">
-                                                        <Typography>{voucher.voucherName}</Typography>
-                                                    </Grid>
-
-                                                ))}
-                                            </Grid>
                                             <Divider />
                                             <Grid sx={{ ml: 1 }} columnSpacing={2} container xs={12} display="flex" justifyContent="flex-start" justifyItems="flex-start" >
                                                 {!voucherList.length ? "" : voucherList.map(voucher => (
-                                                    <Grid xs="3">
-                                                        <Box sx={{ p: 1 }}>{voucher.voucherName} </Box>
-                                                    </Grid>
-
+                                                    !voucher.checked ? "" : (
+                                                        <Grid xs="3">
+                                                            <Box sx={{ m: 1, color: 'rgb(210, 63, 87)' }}>{voucher.voucherName} </Box>
+                                                        </Grid>
+                                                    )
                                                 ))}
                                             </Grid>
                                         </Grid>
@@ -645,9 +623,9 @@ export default function CheckoutHome() {
 
                                 </Box>
 
-                                <Box borderRadius={2} display="flex" justifyContent="flex-start" alignItems="center" sx={{ marginBottom: '2em', backgroundColor: '#fff', width: '100%', boxShadow: '0px 1px 3px rgba(3, 0, 71, 0.09)', padding: '0 2em 0 2em' }} >
+                                <Box borderRadius={2} display="flex" justifyContent="flex-start" alignItems="center" sx={{ marginBottom: '2em', width: '100%',  padding: '0 2em 0 2em' }} >
                                     <Grid container xs={12} paddingTop={3} direction="row">
-                                        <Grid xs={1} display="flex" justifyContent="flex-end">
+                                        {/* <Grid xs={1} display="flex" justifyContent="flex-end">
                                             <Avatar sx={{ bgcolor: 'rgb(210, 63, 87)' }}>4</Avatar>
                                         </Grid>
                                         <Grid xs={10} alignItems="flex-start">
@@ -655,13 +633,11 @@ export default function CheckoutHome() {
                                             <Stack direction="row" margin="1em" display="flex" alignItems="center">
                                                 <Typography variant="body1"> Voucher</Typography>
                                             </Stack>
-                                        </Grid>
+                                        </Grid> */}
                                         <Grid xs={12} display="flex" direction="row" alignItems="center" w>
                                             <CustomButton onClick={payment}>Checkout Now </CustomButton>
                                         </Grid>
                                     </Grid>
-
-
                                 </Box>
 
 
@@ -708,10 +684,11 @@ export default function CheckoutHome() {
                                     </Grid>
                                     <Grid container xs={12} direction="row" sx={{ marginTop: '1em' }}>
                                         <Grid xs={6}>
-                                            <Typography variant="subtitle2"> Discount: </Typography>
+                                            <Typography variant="subtitle2"> Discount:  </Typography>
                                         </Grid>
                                         <Grid xs={6} display="flex" alignItems="flex-end" justifyContent="flex-end" flexDirection="row">
-                                            <Typography variant="subtitle2" justifyItems="flex-end">-</Typography>
+                                            <Typography variant="subtitle2" justifyItems="flex-end">${listItem.map(item => item.number * item.price).reduce((s1, s2) => s1 + s2, 0)
+                                                * (voucherList.filter(v => v.checked).map(v => v.discountPercent).reduce((v1, v2) => v1 + v2, 0)) / 100}</Typography>
                                         </Grid>
                                     </Grid>
 
@@ -721,7 +698,9 @@ export default function CheckoutHome() {
                                             <Typography variant="subtitle2"> Total: </Typography>
                                         </Grid>
                                         <Grid xs={6} display="flex" alignItems="flex-end" justifyContent="flex-end" flexDirection="row">
-                                            <Typography variant="subtitle2" justifyItems="flex-end">${listItem.map(item => item.number * item.price).reduce((s1, s2) => s1 + s2, 0)}</Typography>
+                                            <Typography variant="subtitle2" justifyItems="flex-end">${(listItem.map(item => item.number * item.price).reduce((s1, s2) => s1 + s2, 0) -
+                                                (listItem.map(item => item.number * item.price).reduce((s1, s2) => s1 + s2, 0)
+                                                    * (voucherList.filter(v => v.checked).map(v => v.discountPercent).reduce((v1, v2) => v1 + v2, 0)) / 100)).toFixed(2)}</Typography>
                                         </Grid>
                                     </Grid>
                                 </Box>
@@ -743,7 +722,7 @@ const Item = styled(Paper)(({ theme }) => ({
     color: theme.palette.text.secondary,
 }));
 
-const UnstyledButtonsSimple = (props) => {
+const ButtonsSimple = (props) => {
     return (
         <Stack spacing={2} direction="row" width="90%">
             <CustomButton onClick={props.processTransaction}>Payment</CustomButton>
@@ -757,7 +736,7 @@ const blue = {
     700: '#0059B2',
 };
 
-const CustomButton = styled(ButtonUnstyled)`
+const CustomButton = styled(Button)`
   font-family: IBM Plex Sans, sans-serif;
   font-weight: bold;
   font-size: 0.875rem;
@@ -774,22 +753,22 @@ const CustomButton = styled(ButtonUnstyled)`
     background-color:rgb(210, 63, 87);
   }
 
-  &.${buttonUnstyledClasses.active} {
+  &.${buttonClasses.active} {
     background-color: rgb(210, 63, 87);
   }
 
-  &.${buttonUnstyledClasses.focusVisible} {
+  &.${buttonClasses.focusVisible} {
     box-shadow: 0 4px 20px 0 rgba(61, 71, 82, 0.1), 0 0 0 5px rgba(0, 127, 255, 0.5);
     outline: none;
   }
 
-  &.${buttonUnstyledClasses.disabled} {
+  &.${buttonClasses.disabled} {
     opacity: 0.5;
     cursor: not-allowed;
   }
 `;
 
-const VoucherButton = styled(ButtonUnstyled)`
+const VoucherButton = styled(Button1)`
   text-align: start;
   font-size: 0.875rem;
   border-radius: 12px;
