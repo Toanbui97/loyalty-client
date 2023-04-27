@@ -20,6 +20,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { IconButton, Menu } from '@mui/material';
 import { signIn } from '../../service/CMSService';
+import { enqueueSnackbar } from 'notistack';
 
 const theme = createTheme();
 
@@ -40,8 +41,12 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function SigninDialog() {
+export default function SigninDialog(props) {
     const [open, setOpen] = React.useState(false);
+    const showNoti = (message, variant) => {
+        // variant could be success, error, warning, info, or default
+        enqueueSnackbar({ message, variant });
+    };
 
     const handleClickOpen = () => {
         setOpen(true);
@@ -59,7 +64,10 @@ export default function SigninDialog() {
             .then(res => res.json())
             .then(data => {
                 if(data.code === "20000000") {
-                    localStorage.setItem("customer", data.data);
+                    localStorage.setItem("customer", JSON.stringify(data.data));
+                    handleClose();
+                    showNoti("Login success", "success")
+                    props.setCustomer(data.data);
                 }
             })
     };

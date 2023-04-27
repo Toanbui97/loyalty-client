@@ -22,7 +22,8 @@ const requestBody = {
 }
 
 export const signIn = async (customerName) => {
-    return await fetch(getCMSUrl(signInUrl, {customerName}, null), {
+    requestBody.data = {customerName}
+    return await fetch(getCMSUrl(signInUrl,null , null), {
         method: "POST",
         headers: {
             "Content-Type" : "application/json"

@@ -8,13 +8,13 @@ const requestBody = {
     "requestId" : uuid.v4()
 }
 
-export const orchestratrionTransaction = async (listItem, voucherList) => {
+export const orchestratrionTransaction = async (listItem, voucherList, pointUse) => {
 
     let applyList = voucherList.filter(v => v.checked);
-    let discountPercent = applyList.map(v => v.discountPercent).reduce((s1, s2) => s1+s2, 0);
-    let voucherDetailList = applyList.map(v => v.detailEntities[0].voucherCode);
-    let transactionValue = (listItem.map(item => item.price * item.number).reduce((s1, s2) => s1 + s2, 0) * discountPercent / 100).toFixed(2);
-    let customerCode = localStorage.getItem("customer")?.customerCode;
+    let discountPercent = applyList.map(v => v.discountPercent).reduce((s1, s2) => s1+s2, 0) + pointUse * 10;
+    let voucherDetailList = applyList.map(v => v.voucherCode);
+    let transactionValue = (listItem.map(item => item.price * item.number).reduce((s1, s2) => s1 + s2, 0) * discountPercent/100 - pointUse*10).toFixed(2);
+    let customerCode = JSON.parse(localStorage.getItem("customer"))?.customerCode;
     let body = {
         transactionId :uuid.v4(),
         customerCode: customerCode,
@@ -22,7 +22,8 @@ export const orchestratrionTransaction = async (listItem, voucherList) => {
         transactionTime: new Date(), 
         data: {
             transactionValue: transactionValue,
-            voucherDetailCodeList: voucherDetailList
+            voucherDetailCodeList: voucherDetailList,
+            pointUsed: pointUse
         }
     };
     // body.transactionId = uuid.v4();

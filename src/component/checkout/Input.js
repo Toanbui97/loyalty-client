@@ -35,7 +35,6 @@ const StyledInputElement = styled('input')(
   color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
   background: ${theme.palette.mode === 'dark' ? grey[900] : '#fff'};
   border: 1px solid ${theme.palette.mode === 'dark' ? grey[700] : grey[200]};
-  box-shadow: 0px 4px 30px ${theme.palette.mode === 'dark' ? grey[900] : grey[200]};
 
   &:hover {
     border-color: ${blue[400]};
@@ -59,3 +58,7 @@ const CustomInput = React.forwardRef(function CustomInput(props, ref) {
 export function DeliveryAddressInput() {
   return <CustomInput aria-label="Demo input" placeholder="Delivery Address" />;
 }
+
+export const EPointInput = React.forwardRef(function EPointInput(props, ref) {
+  return <Input  slots={{ input: StyledInputElement }} {...props} ref={ref} />
+})

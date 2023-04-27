@@ -12,8 +12,6 @@ import Home from "./view/Home.js";
 import AlertPopup from './component/common/Arlert.js';
 import VoucherHome from './view/VoucherHome.js';
 import TransactionHome from './view/TransactionHome.js';
-import { applyMiddleware, createStore } from 'redux';
-import createSagaMiddleware from 'redux-saga';
 import CheckoutHome from './view/CheckoutHome.js';
 
 

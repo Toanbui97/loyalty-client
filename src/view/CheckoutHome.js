@@ -41,19 +41,12 @@ import CardHeader from '@mui/material/CardHeader';
 import HoverRating from '../component/transaction/HoverRating';
 import CardActions from '@mui/material/CardActions';
 import IndeterminateCheckBoxOutlinedIcon from '@mui/icons-material/IndeterminateCheckBoxOutlined';
-import AddBoxOutlinedIcon from '@mui/icons-material/AddBoxOutlined';
 import { useLocation, useNavigate } from "react-router";
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { orchestratrionTransaction } from '../service/TransactionService';
 import { getCustomerVoucher } from '../service/VoucherService';
-import VoucherDialog from '../component/transaction/VoucherDialog';
-import PersonIcon from '@mui/icons-material/Person';
-import AddIcon from '@mui/icons-material/Add';
-import { change } from 'redux-form';
 import SelectIntroduction, { DeliveryDateDropDown, DeliveryTimeDropDown } from '../component/checkout/DropDown';
 import SelectForm from '../component/checkout/DropDown';
-import { DeliveryAddressInput } from '../component/checkout/Input';
+import { DeliveryAddressInput, EPointInput } from '../component/checkout/Input';
 import SigninDialog from '../component/common/Signin';
 
 const pages = ['Products', 'Pricing', 'Blog'];
@@ -116,7 +109,9 @@ export default function CheckoutHome() {
     const [voucherList, setVoucherList] = React.useState([]);
     const [voucherApplyList, setVoucherApplyList] = React.useState([]);
     const [openVoucherDialog, setOpenVoucherDialog] = React.useState(false);
+    const [pointUse, setPointUse] = React.useState(0);
     const navigate = useNavigate();
+    const [customer, setCustomer] = React.useState(JSON.parse(localStorage.getItem("customer")), null);
 
 
     const handleClickOpenVoucherDialog = () => {
@@ -221,7 +216,11 @@ export default function CheckoutHome() {
     }
 
     const payment = () => {
-        return orchestratrionTransaction(listItem, voucherList)
+        if (!customer) {
+            showNoti("Need to login first", 'error');
+            return;
+        } 
+        return orchestratrionTransaction(listItem, voucherList, pointUse)
             .then(res => res.json())
             .then(data => {
                 if (data.code === '20000000') {
@@ -373,7 +372,7 @@ export default function CheckoutHome() {
                                         </MenuItem>
                                     ))}
                                 </Menu> */}
-                                <SigninDialog />
+                                <SigninDialog setCustomer={setCustomer} />
                             </Box>
                             <Box sx={{ flexGrow: 0 }}>
 
@@ -555,10 +554,10 @@ export default function CheckoutHome() {
                                         <Grid xs={10} alignItems="flex-start">
                                             <Typography sx={{ ml: 2 }} variant="h6">Delivery Address</Typography>
                                             <Stack direction="row" margin="1em" display="flex" alignItems="center">
-                                            <DeliveryAddressInput sx={{width: '100%'}}/>
+                                                <DeliveryAddressInput sx={{ width: '100%' }} />
                                             </Stack>
                                             <Grid sx={{ ml: 2 }} container xs={12} display="flex" justifyContent="flex-start" >
-                                               
+
                                             </Grid>
 
                                         </Grid>
@@ -608,24 +607,33 @@ export default function CheckoutHome() {
                                                     </List>
                                                 </Dialog>
                                             </Stack>
+
+                                           
                                             <Divider />
                                             <Grid sx={{ ml: 1 }} columnSpacing={2} container xs={12} display="flex" justifyContent="flex-start" justifyItems="flex-start" >
                                                 {!voucherList.length ? "" : voucherList.map(voucher => (
                                                     !voucher.checked ? "" : (
                                                         <Grid xs="3">
-                                                            <Box sx={{ m: 1, color: 'rgb(210, 63, 87)' }}>{voucher.voucherName} </Box>
+                                                            <Box sx={{ m: 1
+                                                                // , color: 'rgb(210, 63, 87)' 
+                                                                }}>{voucher.voucherName} </Box>
                                                         </Grid>
                                                     )
                                                 ))}
                                             </Grid>
+
+                                            <Stack direction="row" margin="1em" alignItems="flex-start">
+                                                <Stack direction="row"  display="flex" alignItems="center" gap={4}>
+                                                    <Typography>Current point: {JSON.parse(localStorage.getItem("customer"))?.epoint}</Typography>
+                                                    <EPointInput placeholder="1 point = 10vnd" onChange={(e) => setPointUse(e.target.value)} />
+                                                </Stack >
+                                            </Stack>
                                         </Grid>
                                     </Grid>
 
-
-
                                 </Box>
 
-                                <Box borderRadius={2} display="flex" justifyContent="flex-start" alignItems="center" sx={{ marginBottom: '2em', width: '100%',  padding: '0 2em 0 2em' }} >
+                                <Box borderRadius={2} display="flex" justifyContent="flex-start" alignItems="center" sx={{ marginBottom: '2em', width: '100%', padding: '0 2em 0 2em' }} >
                                     <Grid container xs={12} paddingTop={3} direction="row">
                                         {/* <Grid xs={1} display="flex" justifyContent="flex-end">
                                             <Avatar sx={{ bgcolor: 'rgb(210, 63, 87)' }}>4</Avatar>
@@ -690,7 +698,7 @@ export default function CheckoutHome() {
                                         </Grid>
                                         <Grid xs={6} display="flex" alignItems="flex-end" justifyContent="flex-end" flexDirection="row">
                                             <Typography variant="subtitle2" justifyItems="flex-end">${listItem.map(item => item.number * item.price).reduce((s1, s2) => s1 + s2, 0)
-                                                * (voucherList.filter(v => v.checked).map(v => v.discountPercent).reduce((v1, v2) => v1 + v2, 0)) / 100}</Typography>
+                                                * (voucherList.filter(v => v.checked).map(v => v.discountPercent).reduce((v1, v2) => v1 + v2, 0)) / 100 + pointUse * 10}</Typography>
                                         </Grid>
                                     </Grid>
 

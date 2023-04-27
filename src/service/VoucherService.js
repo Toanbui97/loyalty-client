@@ -69,7 +69,9 @@ export const deleteVoucher = async (voucherCode) => {
 }
 
 export const getCustomerVoucher = async () => {
-    let customerCode = localStorage.getItem("customer")?.customerCode;
+    
+    let customerCode = JSON.parse(localStorage.getItem("customer"))?.customerCode;
+    console.log(customerCode);
     return await fetch(getVoucherUrl(customerVoucherEndpoint, {customerCode}, null), {
         method: "POST",
         headers: {
