@@ -67,7 +67,9 @@ export default function SigninDialog(props) {
                     localStorage.setItem("customer", JSON.stringify(data.data));
                     handleClose();
                     showNoti("Login success", "success")
-                    props.setCustomer(data.data);
+                    if (props.setCustomer) {
+                        props.setCustomer(data.data);
+                    }
                 }
             })
     };

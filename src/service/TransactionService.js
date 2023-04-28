@@ -12,7 +12,6 @@ export const orchestratrionTransaction = async (listItem, voucherList, pointUse)
 
     let applyList = voucherList.filter(v => v.checked);
     let discountPercent = applyList.map(v => v.discountPercent).reduce((s1, s2) => s1+s2, 0) + pointUse * 10;
-    let voucherDetailList = applyList.map(v => v.voucherCode);
     let transactionValue = (listItem.map(item => item.price * item.number).reduce((s1, s2) => s1 + s2, 0) * discountPercent/100 - pointUse*10).toFixed(2);
     let customerCode = JSON.parse(localStorage.getItem("customer"))?.customerCode;
     let body = {
@@ -22,8 +21,8 @@ export const orchestratrionTransaction = async (listItem, voucherList, pointUse)
         transactionTime: new Date(), 
         data: {
             transactionValue: transactionValue,
-            voucherDetailCodeList: voucherDetailList,
-            pointUsed: pointUse
+            voucherCodeList: applyList.map(v => v.voucherCode),
+            pointUse: pointUse
         }
     };
     // body.transactionId = uuid.v4();
