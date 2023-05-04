@@ -12,7 +12,7 @@ export const orchestratrionTransaction = async (listItem, voucherList, pointUse)
 
     let applyList = voucherList.filter(v => v.checked);
     let discountPercent = applyList.map(v => v.discountPercent).reduce((s1, s2) => s1+s2, 0) + pointUse * 10;
-    let transactionValue = (listItem.map(item => item.price * item.number).reduce((s1, s2) => s1 + s2, 0) * discountPercent/100 - pointUse*10).toFixed(2);
+    let transactionValue = (listItem.map(item => item.price * item.number).reduce((s1, s2) => s1 + s2, 0) - discountPercent/100 - pointUse*10).toFixed(2);
     let customerCode = JSON.parse(localStorage.getItem("customer"))?.customerCode;
     let body = {
         transactionId :uuid.v4(),
@@ -34,6 +34,29 @@ export const orchestratrionTransaction = async (listItem, voucherList, pointUse)
     console.log(JSON.stringify(requestBody))
 
     return await fetch(getTransactionUrl(orchestrationTransactionUrl, null, null), {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json"
+        }, 
+        body: JSON.stringify(requestBody)
+    });
+}
+
+
+export const orchestrationVoucher = async (voucher) => {
+
+    let body = {
+        numberVoucher : 1,
+        voucherCode: voucher.voucherCode,
+        epointSpend: voucher.price,
+        customerCode: JSON.parse(localStorage.getItem("customer"))?.customerCode
+    }
+    
+    requestBody.data = body;
+
+    console.log(JSON.stringify(requestBody));
+
+    return await fetch(getTransactionUrl(orchestrationVoucherUrl, null, null), {
         method: "POST",
         headers: {
             "Content-Type" : "application/json"

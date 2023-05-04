@@ -44,7 +44,7 @@ export const mainListItems = (
       <ListItemText primary="Rank" />
     </ListItem>
 
-    <ListItem button component={Link} to={"/voucherHome"}>
+    <ListItem button component={Link} to={"/voucherAdmin"}>
       <ListItemIcon>
         <LoyaltyIcon />
       </ListItemIcon>

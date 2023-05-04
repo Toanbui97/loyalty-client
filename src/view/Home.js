@@ -22,12 +22,54 @@ import Drawer from '../component/common/Drawer';
 import Copyright from '../component/common/Copyright';
 import { mainListItems, secondaryListItems } from '../component/common/MenuList';
 import Common from '../component/common/Common';
+import { getMDataList } from '../service/CMSService';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import MDataDetailDialog from '../component/dashboard/MDataDetailDialog';
+import MDataAddDialog from '../component/dashboard/MDataAddDialog';
+   
 
 
 const mdTheme = createTheme();
 
 
 export default function Home() {
+
+    const [mDataList, setMDataList] = React.useState([]);
+    const [open, setOpen] = React.useState(false);
+    const [mdata, setMdata] = React.useState(null);
+    const [openAdd, setOpenAdd] = React.useState(false);
+
+    React.useEffect(() => {
+        getMDataList().then(res => res.json())
+            .then(data => setMDataList(data.dataList));
+    }, [])
+
+    const handleAddButton = React.useCallback(
+        e => {
+            e.preventDefault();
+            setOpenAdd(true);
+        }
+    )
+
+    const hanldeCloseAdd = React.useCallback(
+        () => {
+            setOpenAdd(false);
+        }
+    )
+    const handleClose = () => {
+        setOpen(false);
+        // window.location.reload(true);
+    };
+
+
+    const showDetail = React.useCallback(
+        (e, data) => {
+            console.log(data);
+            e.preventDefault();
+            setOpen(true);
+            setMdata(data)
+        })
+
 
     return (
         <ThemeProvider theme={mdTheme}>
@@ -58,7 +100,31 @@ export default function Home() {
                                         height: 240,
                                     }}
                                 >
-                                    a
+                                    <Typography>Master Data</Typography>
+                                    <TableContainer component={Paper}>
+                                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>Key</TableCell>
+                                                    <TableCell>Value</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                {mDataList ? mDataList.map((data) => (
+                                                    <TableRow
+                                                        key={data.key}
+                                                        sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                                        onClick={(event) => showDetail(event, data)}
+                                                    >
+                                                        <TableCell component="th" scope="row">
+                                                            {data.key}
+                                                        </TableCell>
+                                                        <TableCell>{data.value}</TableCell>
+                                                    </TableRow>
+                                                )) : ""}
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
                                 </Paper>
                             </Grid>
                             {/* Recent Deposits */}
@@ -85,6 +151,9 @@ export default function Home() {
                     </Container>
                 </Box>
             </Box>
+            <MDataDetailDialog open={open} handleClose={handleClose} mdata={mdata}  />
+            <MDataAddDialog  open={openAdd} handleClose={hanldeCloseAdd}/>
+
         </ThemeProvider>
     );
 }
