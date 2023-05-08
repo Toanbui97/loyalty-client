@@ -23,7 +23,7 @@ export const mainListItems = (
   <React.Fragment>
     
 
-    <ListItem button component={Link} to={"/"} >
+    <ListItem button component={Link} to={"/dashboard"} >
       <ListItemIcon>
         <DashboardIcon />
       </ListItemIcon>

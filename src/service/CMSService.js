@@ -17,10 +17,32 @@ const deleteRankUrl = process.env.REACT_APP_CMS_DELETE_RANK_URL;
 const signInUrl = process.env.REACT_APP_CMS_SIGN_IN_URL;
 const receiveMasterDataListUrl = process.env.REACT_APP_CMS_RECEIVE_MDATA_LIST_URL;
 const createOrUpdateMDataUrl = process.env.REACT_APP_CMS_CREATE_UPDATE_MDATA_URL;
+const executeEpointJobUrl = process.env.REACT_APP_CMS_EXECUTE_EPOINT_JOB_URL;
+const executeRpointJobUrl = process.env.REACT_APP_CMS_EXECUTE_RPOINT_JOB_URL;
 // const setAlert = useAlert();
 
 const requestBody = {
     "requestId" : uuid.v4()
+}
+
+export const executeEpointJob = async () => {
+    return await fetch(getCMSUrl(executeEpointJobUrl, null, null), {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json"
+        }, 
+        body: JSON.stringify(requestBody)
+    })
+}
+
+export const executeRpointJob = async () => {
+    return await fetch(getCMSUrl(executeRpointJobUrl, null, null), {
+        method: "POST",
+        headers: {
+            "Content-Type" : "application/json"
+        }, 
+        body: JSON.stringify(requestBody)
+    })
 }
 
 export const signIn = async (customerName) => {

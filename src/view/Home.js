@@ -22,11 +22,12 @@ import Drawer from '../component/common/Drawer';
 import Copyright from '../component/common/Copyright';
 import { mainListItems, secondaryListItems } from '../component/common/MenuList';
 import Common from '../component/common/Common';
-import { getMDataList } from '../service/CMSService';
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { executeEpointJob, executeRpointJob, getMDataList } from '../service/CMSService';
+import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import MDataDetailDialog from '../component/dashboard/MDataDetailDialog';
 import MDataAddDialog from '../component/dashboard/MDataAddDialog';
-   
+import { useSnackbar } from 'notistack';
+
 
 
 const mdTheme = createTheme();
@@ -38,11 +39,18 @@ export default function Home() {
     const [open, setOpen] = React.useState(false);
     const [mdata, setMdata] = React.useState(null);
     const [openAdd, setOpenAdd] = React.useState(false);
+    const { enqueueSnackbar } = useSnackbar();
 
     React.useEffect(() => {
         getMDataList().then(res => res.json())
             .then(data => setMDataList(data.dataList));
     }, [])
+
+    const showNoti = (message, variant) => {
+        // variant could be success, error, warning, info, or default
+        enqueueSnackbar({ message, variant });
+    };
+
 
     const handleAddButton = React.useCallback(
         e => {
@@ -70,6 +78,30 @@ export default function Home() {
             setMdata(data)
         })
 
+    
+    const hanldeEpointJob = () => {
+        executeEpointJob().then(res => res.json())
+        .then(data => {
+            if (data.code === '20000000') {
+                showNoti(`Job run success`, 'success');
+
+            } else {
+                showNoti(`Job run fail`, 'error');
+            }
+        })
+    }
+
+    const hanldeRpointJob = () => {
+        executeRpointJob().then(res => res.json())
+        .then(data => {
+            if (data.code === '20000000') {
+                showNoti(`Job run success`, 'success');
+
+            } else {
+                showNoti(`Job run fail`, 'error');
+            }
+        })
+    }
 
     return (
         <ThemeProvider theme={mdTheme}>
@@ -97,9 +129,57 @@ export default function Home() {
                                         p: 2,
                                         display: 'flex',
                                         flexDirection: 'column',
+
+                                    }}
+                                >
+                                    <Typography>Job</Typography>
+                                    <TableContainer component={Paper}>
+                                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                                            <TableHead>
+                                                <TableRow>
+                                                    <TableCell>Name</TableCell>
+                                                    {/* <TableCell>Lastest status</TableCell> */}
+                                                    <TableCell>Action</TableCell>
+                                                </TableRow>
+                                            </TableHead>
+                                            <TableBody>
+                                                <TableRow
+                                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                                >
+                                                    <TableCell component="th" scope="row">
+                                                        customerEPointJob
+                                                    </TableCell>
+                                                    <TableCell><Button onClick={hanldeEpointJob}>Execute</Button></TableCell>
+                                                </TableRow>
+                                                <TableRow
+                                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                                >
+                                                    <TableCell component="th" scope="row">
+                                                        customerRPointJob
+                                                    </TableCell>
+                                                    <TableCell><Button  onClick={hanldeRpointJob}>Execute</Button></TableCell>
+                                                </TableRow>
+                                            </TableBody>
+                                        </Table>
+                                    </TableContainer>
+                                </Paper>
+                            </Grid>
+                            {/* Recent Deposits */}
+                            <Grid item xs={12} md={4} lg={3}>
+                                <Paper
+                                    sx={{
+                                        p: 2,
+                                        display: 'flex',
+                                        flexDirection: 'column',
                                         height: 240,
                                     }}
                                 >
+
+                                </Paper>
+                            </Grid>
+                            {/* Recent Orders */}
+                            <Grid item xs={12}>
+                                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
                                     <Typography>Master Data</Typography>
                                     <TableContainer component={Paper}>
                                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -127,32 +207,13 @@ export default function Home() {
                                     </TableContainer>
                                 </Paper>
                             </Grid>
-                            {/* Recent Deposits */}
-                            <Grid item xs={12} md={4} lg={3}>
-                                <Paper
-                                    sx={{
-                                        p: 2,
-                                        display: 'flex',
-                                        flexDirection: 'column',
-                                        height: 240,
-                                    }}
-                                >
-                                    b
-                                </Paper>
-                            </Grid>
-                            {/* Recent Orders */}
-                            <Grid item xs={12}>
-                                <Paper sx={{ p: 2, display: 'flex', flexDirection: 'column' }}>
-                                    c
-                                </Paper>
-                            </Grid>
                         </Grid>
                         <Copyright sx={{ pt: 4 }} />
                     </Container>
                 </Box>
             </Box>
-            <MDataDetailDialog open={open} handleClose={handleClose} mdata={mdata}  />
-            <MDataAddDialog  open={openAdd} handleClose={hanldeCloseAdd}/>
+            <MDataDetailDialog open={open} handleClose={handleClose} mdata={mdata} />
+            <MDataAddDialog open={openAdd} handleClose={hanldeCloseAdd} />
 
         </ThemeProvider>
     );
