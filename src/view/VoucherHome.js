@@ -117,6 +117,7 @@ function VoucherHome() {
     const [listItemInCart, setListItemInCart] = React.useState([]);
     const [voucherList, setVoucherList] = React.useState([]);
     const [openDrawer, setOpenDrawer] = React.useState(false);
+    const [currentRpoint, setCurrentRpoint] = React.useState(0);
     const [epoint, setEpoint] = React.useState(localStorage.getItem("customer") ? localStorage.getItem("customer").epoint : 0);
     const navigate = useNavigate();
 
@@ -127,6 +128,7 @@ function VoucherHome() {
             console.log(voucherList);
         });
 
+        setCurrentRpoint(JSON.parse(localStorage.getItem('customer')).rpoint);
     }, [])
 
     const setOpenRightDrawer = (open) => (event) => {
@@ -167,6 +169,12 @@ function VoucherHome() {
     };
 
     const saveVoucher = (e, voucher) => {
+
+        if (!localStorage.getItem('customer')) {
+            showNoti("Need to login first", 'error');
+            return;
+        }
+
         e.stopPropagation();
         e.preventDefault();
         orchestrationVoucher(voucher)
@@ -419,7 +427,7 @@ function VoucherHome() {
                                                 <Typography variant="body2" color="">
                                                     Price: {item.price}
                                                 </Typography>
-                                                <SaveVoucherButton disabled={item.requireRPoint <= localStorage.getItem("customer").rpoint}
+                                                <SaveVoucherButton disabled={item.requireRPoint <= currentRpoint}
                                                  onClick={(e) => {saveVoucher(e, item)}}>Save</SaveVoucherButton>
                                             </CardContent>
 

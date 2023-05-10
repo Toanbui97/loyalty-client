@@ -15,7 +15,7 @@ import AdbIcon from '@mui/icons-material/Adb';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import { styled, alpha } from '@mui/material/styles';
-import { Badge, Checkbox, Dialog, DialogTitle, ListItem, ListItemButton, ListItemText, Paper } from '@mui/material';
+import { Badge, Checkbox, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, ListItem, ListItemButton, ListItemText, Paper } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2';
 import { HomeDropDown, PageDropDown, UserAccountDropDown } from '../component/transaction/DropDown';
 import BootstrapButton from '../component/transaction/BootstrapButton';
@@ -48,6 +48,7 @@ import SelectIntroduction, { DeliveryDateDropDown, DeliveryTimeDropDown } from '
 import SelectForm from '../component/checkout/DropDown';
 import { DeliveryAddressInput, EPointInput } from '../component/checkout/Input';
 import SigninDialog from '../component/common/Signin';
+import { signIn } from '../service/CMSService';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
@@ -109,9 +110,11 @@ export default function CheckoutHome() {
     const [voucherList, setVoucherList] = React.useState([]);
     const [voucherApplyList, setVoucherApplyList] = React.useState([]);
     const [openVoucherDialog, setOpenVoucherDialog] = React.useState(false);
+    const [openPaymentDialog, setOpenPaymentDialog] = React.useState(false);
     const [pointUse, setPointUse] = React.useState(0);
     const navigate = useNavigate();
     const [customer, setCustomer] = React.useState(JSON.parse(localStorage.getItem("customer")), null);
+    const [transactionRes, setTransactionRes] = React.useState(null);
 
 
     const handleClickOpenVoucherDialog = () => {
@@ -120,6 +123,23 @@ export default function CheckoutHome() {
 
     const handleCloseVoucherDialog = (value) => {
         setOpenVoucherDialog(false);
+    };
+
+    const handleClickOpenPaymentDialog = () => {
+        setOpenPaymentDialog(true);
+    };
+
+    const handleCloseOpenPaymentDialog = (e, reason) => {
+        if (reason === 'backdropClick') return;
+        else {
+            setOpenPaymentDialog(false);
+            navigate("/");
+        }
+        // console.log(e);
+        // console.log(reason);
+        // setOpenPaymentDialog(false);
+        // navigate("/");
+
     };
 
     const setOpenRightDrawer = (open) => (event) => {
@@ -215,22 +235,29 @@ export default function CheckoutHome() {
         showNoti("Remove from Cart", 'error');
     }
 
-    const payment = () => {
+    const payment = async () => {
         if (!customer) {
             showNoti("Need to login first", 'error');
             return;
-        } 
-        return orchestratrionTransaction(listItem, voucherList, pointUse)
-            .then(res => res.json())
-            .then(data => {
-                if (data.code === '20000000') {
-                    showNoti(`Payment success`, 'success');
-                    setListItem([]);
-                    setOpenDrawer(false);
-                    navigate("/")
-                }
-            })
+        }
+        const res = await orchestratrionTransaction(listItem, voucherList, pointUse);
+        const data = await res.json();
+        if (data.code === '20000000') {
+            setOpenPaymentDialog(true);
+            // showNoti(`Payment success`, 'success');
+            setTransactionRes(data.data);
+            setListItem([]);
+            setOpenDrawer(false);
+        }
+
+        const signinRes = await signIn(customer.customerName);
+        const signinData = await signinRes.json();
+        if (signinData.code === '20000000') {
+            localStorage.setItem("customer", JSON.stringify(signinData.data));
+        }
     }
+
+
 
     const changeVoucherCheckbox = (e, voucher) => {
         if (e.target.checked) {
@@ -608,22 +635,23 @@ export default function CheckoutHome() {
                                                 </Dialog>
                                             </Stack>
 
-                                           
+
                                             <Divider />
                                             <Grid sx={{ ml: 1 }} columnSpacing={2} container xs={12} display="flex" justifyContent="flex-start" justifyItems="flex-start" >
                                                 {!voucherList.length ? "" : voucherList.map(voucher => (
                                                     !voucher.checked ? "" : (
                                                         <Grid xs="3">
-                                                            <Box sx={{ m: 1
+                                                            <Box sx={{
+                                                                m: 1
                                                                 // , color: 'rgb(210, 63, 87)' 
-                                                                }}>{voucher.voucherName} </Box>
+                                                            }}>{voucher.voucherName} </Box>
                                                         </Grid>
                                                     )
                                                 ))}
                                             </Grid>
 
                                             <Stack direction="row" margin="1em" alignItems="flex-start">
-                                                <Stack direction="row"  display="flex" alignItems="center" gap={4}>
+                                                <Stack direction="row" display="flex" alignItems="center" gap={4}>
                                                     <Typography>Current point: {JSON.parse(localStorage.getItem("customer"))?.epoint}</Typography>
                                                     <EPointInput placeholder="1 point = 10vnd" onChange={(e) => setPointUse(e.target.value)} />
                                                 </Stack >
@@ -718,6 +746,69 @@ export default function CheckoutHome() {
                         </Grid>
                     </Grid>
                 </Container>
+                <React.Fragment>
+                    <Dialog
+                        open={openPaymentDialog}
+                        onClose={handleCloseOpenPaymentDialog}
+                        aria-labelledby="alert-dialog-title"
+                        aria-describedby="alert-dialog-description"
+                        maxWidth="md"
+                        keepMounted
+
+                    >
+                        <DialogTitle id="alert-dialog-title" sx={{ color: 'rgb(210, 63, 87)' }}>
+                            {"Payment information"}
+                        </DialogTitle>
+                        <Grid container xs={12} display='flex' padding='0 20px 0 20px' alignItems="center" alignContent="center">
+                            <Grid container xs={6} alignItems="center" alignContent="center" justifyContent="center">
+                                {/* <Grid xs={6}>
+                                        <Typography sx={{ marginBottom: '1em' }}>Customer </Typography>
+                                        <Typography sx={{ marginBottom: '1em' }}>Transaction value </Typography>
+                                        <Typography sx={{ display: 'inline' }}>Transaction time </Typography>
+                                    </Grid>
+                                    <Grid xs={6}>
+                                        <Typography sx={{ marginBottom: '1em' }}>{transactionRes?.customerCode}</Typography>
+                                        <Typography sx={{ marginBottom: '1em' }}>{transactionRes?.transactionValue}</Typography>
+                                        <Typography sx={{ display: 'inline' }}>{transactionRes?.transactionTime}</Typography>
+                                    </Grid> */}
+                                <Stack direction="row" sx={{ marginBottom: '1em' }} display="flex" alignItems="center" alignContent="center" width='100%' fullWidth="true">
+                                    <Typography>Customer: {transactionRes?.customerCode}</Typography>
+                                </Stack>
+                                <Stack direction="row" sx={{ marginBottom: '1em' }} width='100%' fullWidth="true">
+                                    <Typography>Transaction value: {transactionRes?.transactionValue}</Typography>
+                                </Stack>
+                                <Stack direction="row" width='100%' fullWidth="true">
+                                    <Typography sx={{ display: 'inline' }}>Transaction time: {transactionRes?.transactionTime}</Typography>
+                                </Stack>
+                            </Grid>
+
+                            <Grid container xs={6} >
+                                {/* <Grid xs={6}>
+                                        <Typography sx={{ marginBottom: '1em' }}>Rpoint gain</Typography>
+                                        <Typography sx={{ marginBottom: '1em' }}>Epoint gain</Typography>
+                                        <Typography>Epoint spend</Typography>
+                                    </Grid>
+                                    <Grid xs={6}>
+                                        <Typography sx={{ marginBottom: '1em' }}>{transactionRes?.rpointGain}</Typography>
+                                        <Typography sx={{ marginBottom: '1em' }}>{transactionRes?.epointGain}</Typography>
+                                        <Typography>{transactionRes?.epointSpend}</Typography>
+                                    </Grid> */}
+                                <Stack direction="row" sx={{ marginBottom: '1em' }} width='100%' fullWidth="true">
+                                    <Typography>Epoint gain: {transactionRes?.epointGain}</Typography>
+                                </Stack>
+                                <Stack direction="row" sx={{ marginBottom: '1em' }} width='100%' fullWidth="true">
+                                    <Typography>Rpoint gain: {transactionRes?.rpointGain}</Typography>
+                                </Stack>
+                                <Stack direction="row" width='100%' fullWidth="true">
+                                    <Typography sx={{ display: 'inline' }}>Epoint spend: {transactionRes?.epointSpend}</Typography>
+                                </Stack>
+                            </Grid>
+                        </Grid>
+                        <DialogActions>
+                            <Button onClick={handleCloseOpenPaymentDialog}>Close</Button>
+                        </DialogActions>
+                    </Dialog>
+                </React.Fragment>
             </div>
         </div>
     )
