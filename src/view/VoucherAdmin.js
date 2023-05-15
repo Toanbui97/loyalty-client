@@ -196,6 +196,7 @@ export default function VoucherAdmin() {
                                         <TableCell align="right">Total voucher</TableCell>
                                         <TableCell align="right">Discount percent</TableCell>
                                         <TableCell align="right">Price</TableCell>
+                                        <TableCell align="right">Rank require</TableCell>
                                         <TableCell align="center">Action</TableCell>
                                     </TableRow>
                                 </TableHead>
@@ -216,6 +217,7 @@ export default function VoucherAdmin() {
                                                 <TableCell align="right">{data.totalVoucher}</TableCell>
                                                 <TableCell align="right">{data.discountPercent}</TableCell>
                                                 <TableCell align="right">{data.price}</TableCell>
+                                                <TableCell align="right">{data.rankRequire}</TableCell>
                                                 <TableCell align="center" onClick={e => deleteRow(e, data.voucherCode)}><DeleteIcon /></TableCell>
                                             </TableRow>
                                         ))}

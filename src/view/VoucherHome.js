@@ -46,6 +46,7 @@ import { orchestrationVoucher, orchestratrionTransaction } from '../service/Tran
 import { getVoucherList } from '../service/VoucherService';
 import { useNavigate } from "react-router-dom";
 import SigninDialog from '../component/common/Signin';
+import { getRankList } from '../service/CMSService';
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
@@ -117,7 +118,7 @@ function VoucherHome() {
     const [listItemInCart, setListItemInCart] = React.useState([]);
     const [voucherList, setVoucherList] = React.useState([]);
     const [openDrawer, setOpenDrawer] = React.useState(false);
-    const [currentRpoint, setCurrentRpoint] = React.useState(0);
+    const [rankRequireList, setRankRequireList] = React.useState([]);
     const [epoint, setEpoint] = React.useState(localStorage.getItem("customer") ? localStorage.getItem("customer").epoint : 0);
     const navigate = useNavigate();
 
@@ -128,7 +129,13 @@ function VoucherHome() {
             console.log(voucherList);
         });
 
-        setCurrentRpoint(JSON.parse(localStorage.getItem('customer')).rpoint);
+        getRankList().then(res => res.json())
+        .then(data => {
+            let rankList = data.dataList;
+            let currentRank = JSON.parse(localStorage.getItem("customer")).rankCode;
+            let currentIndex = rankList.findIndex(r => r.rankCode === currentRank);
+            setRankRequireList(rankList.slice(currentIndex).map(r => r.rankCode));
+        })
     }, [])
 
     const setOpenRightDrawer = (open) => (event) => {
@@ -422,12 +429,12 @@ function VoucherHome() {
                                                     {item.description}
                                                 </Typography>
                                                 <Typography variant="body2" color="">
-                                                    Rpoint require: {item.requireRPoint ? item.requireRPoint : 0}
+                                                    Rank require: {item.rankRequire}
                                                 </Typography>
                                                 <Typography variant="body2" color="">
                                                     Price: {item.price}
                                                 </Typography>
-                                                <SaveVoucherButton disabled={item.requireRPoint <= currentRpoint}
+                                                <SaveVoucherButton disabled={item.rankRequire != 'NONE' && !rankRequireList.includes(item.rankRequire)}
                                                  onClick={(e) => {saveVoucher(e, item)}}>Save</SaveVoucherButton>
                                             </CardContent>
 

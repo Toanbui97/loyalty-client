@@ -100,10 +100,15 @@ const Item = styled(Button)(({ theme }) => ({
     color: theme.palette.text.secondary,
 }));
 
+function randomIntFromInterval(min, max) { // min and max included 
+    const str = (Math.random() * (max - min) + min).toFixed(2);
+    return parseFloat(str);
+}
+  
 const initData = () => {
     let arr = [];
     for (let i = 0; i <= 15; i++) {
-        arr.push({ name: 'Police Gray Eyeglasses' + i, code: '1s2fert' + i, price: 1234, rate: 3 });
+        arr.push({ name: 'Police Gray Eyeglasses' + i, code: '1s2fert' + i, price: randomIntFromInterval(2000, 10000), rate: 3 });
     }
     return arr;
 }
@@ -546,7 +551,7 @@ function TransactionHome() {
                                             <CardMedia
                                                 component="img"
                                                 height="230"
-                                                image="https://bazaar.ui-lib.com/_next/image?url=%2Fassets%2Fimages%2Fproducts%2FFashion%2FAccessories%2F7.PoliceGrayEyeglasses.png&w=640&q=75"
+                                                image="https://bazaar.ui-lib.com/_next/image?url=%2Fassets%2Fimages%2Fproducts%2FFashion%2FClothes%2F1.SilverHighNeckSweater.png&w=384&q=75"
                                                 alt="Paella dish"
                                             />
                                             <CardContent>

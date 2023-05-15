@@ -725,8 +725,8 @@ export default function CheckoutHome() {
                                             <Typography variant="subtitle2"> Discount:  </Typography>
                                         </Grid>
                                         <Grid xs={6} display="flex" alignItems="flex-end" justifyContent="flex-end" flexDirection="row">
-                                            <Typography variant="subtitle2" justifyItems="flex-end">${listItem.map(item => item.number * item.price).reduce((s1, s2) => s1 + s2, 0)
-                                                * (voucherList.filter(v => v.checked).map(v => v.discountPercent).reduce((v1, v2) => v1 + v2, 0)) / 100 + pointUse * 10}</Typography>
+                                            <Typography variant="subtitle2" justifyItems="flex-end">${(listItem.map(item => item.number * item.price).reduce((s1, s2) => s1 + s2, 0)
+                                                * (voucherList.filter(v => v.checked).map(v => v.discountPercent).reduce((v1, v2) => v1 + v2, 0)) / 100 + pointUse * 10).toFixed(2)}</Typography>
                                         </Grid>
                                     </Grid>
 
