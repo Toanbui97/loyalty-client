@@ -103,6 +103,10 @@ export default function Home() {
         })
     }
 
+    const hanldeDeactivateJob = () => {
+        
+    }
+
     return (
         <ThemeProvider theme={mdTheme}>
             <Box sx={{ display: 'flex' }}>
@@ -132,7 +136,7 @@ export default function Home() {
 
                                     }}
                                 >
-                                    <Typography>Job</Typography>
+                                     <Typography>Job</Typography>
                                     <TableContainer component={Paper}>
                                         <Table sx={{ minWidth: 650 }} aria-label="simple table">
                                             <TableHead>
@@ -147,7 +151,7 @@ export default function Home() {
                                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                                 >
                                                     <TableCell component="th" scope="row">
-                                                        customerEPointJob
+                                                        Calculate epoint 
                                                     </TableCell>
                                                     <TableCell><Button onClick={hanldeEpointJob}>Execute</Button></TableCell>
                                                 </TableRow>
@@ -155,9 +159,17 @@ export default function Home() {
                                                     sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                                                 >
                                                     <TableCell component="th" scope="row">
-                                                        customerRPointJob
+                                                        Calculate rank 
                                                     </TableCell>
                                                     <TableCell><Button  onClick={hanldeRpointJob}>Execute</Button></TableCell>
+                                                </TableRow>
+                                                <TableRow
+                                                    sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                                >
+                                                    <TableCell component="th" scope="row">
+                                                        Deactivate expire point
+                                                    </TableCell>
+                                                    <TableCell><Button  onClick={hanldeDeactivateJob}>Execute</Button></TableCell>
                                                 </TableRow>
                                             </TableBody>
                                         </Table>
