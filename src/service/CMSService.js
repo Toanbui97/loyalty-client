@@ -30,7 +30,8 @@ export const deactivateEPointJob = async () => {
     return await fetch(getCMSUrl(deactiveEPointJobUrl, null, null), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     })
@@ -40,7 +41,8 @@ export const executeEpointJob = async () => {
     return await fetch(getCMSUrl(executeEpointJobUrl, null, null), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     })
@@ -50,7 +52,8 @@ export const executeRpointJob = async () => {
     return await fetch(getCMSUrl(executeRpointJobUrl, null, null), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     })
@@ -61,7 +64,8 @@ export const signIn = async (customerName) => {
     return await fetch(getCMSUrl(signInUrl,null , null), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });
@@ -76,7 +80,8 @@ export const createOrUpdateMData = async (mdata) => {
     return await fetch(getCMSUrl(createOrUpdateMDataUrl,null , null), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });
@@ -86,7 +91,8 @@ export const getMDataList = async () => {
     return await fetch(getCMSUrl(receiveMasterDataListUrl, null , null), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });
@@ -96,7 +102,8 @@ export const getCustomerList = async (page, size) => {
     return await fetch(getCMSUrl(receiveCustomerList, null, {page : page, size : size}), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });
@@ -106,7 +113,8 @@ export const getCustomerDetail = async (customerCode) => {
     return await fetch(getCMSUrl(receiveCustomerInfo, {customerCode: customerCode}, null), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });
@@ -118,7 +126,8 @@ export const updateCustomer = async (customer) => {
     return await fetch(baseUrl+updateCustomerInfo, {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     })
@@ -128,7 +137,8 @@ export const getRankList = async () => {
     return await fetch(baseUrl+ receiveRankList, {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });
@@ -141,7 +151,8 @@ export const getRankDetail = async (rankCode) => {
     return await fetch(baseUrl+ receiveRankInform, {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });
@@ -153,7 +164,8 @@ export const updateRank = async (rank) => {
     return await fetch(baseUrl+updateRankInform, {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });
@@ -165,7 +177,8 @@ export const createRank = async (data) => {
     return await fetch(getCMSUrl(createRankUrl, null, null), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });
@@ -177,7 +190,8 @@ export const createCustomer = async (data) => {
     return await fetch(getCMSUrl(createCustomerUrl, null, null), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });
@@ -187,7 +201,8 @@ export const deleteCustomer = async (code) => {
     return await fetch(getCMSUrl(deleteCustomerUrl, {customerCode: code}, null), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });
@@ -197,7 +212,8 @@ export const deleteRank = async (code) => {
     return await fetch(getCMSUrl(deleteRankUrl, {rankCode: code}, null), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });

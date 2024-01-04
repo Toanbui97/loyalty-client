@@ -36,7 +36,8 @@ export const orchestratrionTransaction = async (listItem, voucherList, pointUse)
     return await fetch(getTransactionUrl(orchestrationTransactionUrl, null, null), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });
@@ -59,7 +60,8 @@ export const orchestrationVoucher = async (voucher) => {
     return await fetch(getTransactionUrl(orchestrationVoucherUrl, null, null), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });

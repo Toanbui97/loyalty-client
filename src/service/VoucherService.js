@@ -41,7 +41,8 @@ export const createVoucherInfo = async (data) => {
     return await fetch(getVoucherUrl(createVoucherInfoEndPoint, null, null), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });
@@ -52,7 +53,8 @@ export const getVoucherInfo = async (voucherCode) => {
     return await fetch (getVoucherUrl(receiveVoucherInfoEndpoint, {voucherCode: voucherCode}, null), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });
@@ -62,7 +64,8 @@ export const deleteVoucher = async (voucherCode) => {
     return await fetch(getVoucherUrl(deleteVoucherEndpoint, {voucherCode: voucherCode}, null) , {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });
@@ -75,7 +78,8 @@ export const getCustomerVoucher = async () => {
     return await fetch(getVoucherUrl(customerVoucherEndpoint, {customerCode}, null), {
         method: "POST",
         headers: {
-            "Content-Type" : "application/json"
+            "Content-Type" : "application/json",
+            "Access-Control-Allow-Private-Network": true
         }, 
         body: JSON.stringify(requestBody)
     });
